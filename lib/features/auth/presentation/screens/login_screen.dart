@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
 import 'package:tasknexus/core/config/app_textstyles.dart';
@@ -31,8 +33,10 @@ class ScreenLogin extends StatelessWidget {
           //! CONTENT AREA
           Padding(
             padding: EdgeInsets.symmetric(
-              vertical: 35,
-              horizontal: screenWidth * 0.1,
+              vertical: screenHeight * 0.03,
+              // assuring screen responsiveness
+              horizontal:
+                  screenWidth > 1050 ? screenWidth * 0.1 : screenWidth * 0.01,
             ),
             child: Container(
               height: double.infinity,
@@ -87,7 +91,9 @@ class ScreenLogin extends StatelessWidget {
                               Spacer(),
                               Text(
                                 'Focus\nProductivity\nAchieve More',
-                                style: AppTextstyles.loginSuperHeading,
+                                style: AppTextstyles.loginSuperHeading.copyWith(
+                                  color: AppColors.whiteColor,
+                                ),
                               ),
                               SizedBox(height: 18),
                               Text(
