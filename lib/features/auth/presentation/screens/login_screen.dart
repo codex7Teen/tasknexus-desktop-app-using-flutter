@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:tasknexus/core/config/app_textstyles.dart';
+import 'package:tasknexus/shared/custom_auth_textfields.dart';
+import 'package:tasknexus/shared/custom_black_button.dart';
+import 'package:tasknexus/shared/custom_google_signin_button.dart';
 
 class ScreenLogin extends StatelessWidget {
   const ScreenLogin({super.key});
@@ -10,10 +13,12 @@ class ScreenLogin extends StatelessWidget {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final screenHeight = MediaQuery.sizeOf(context).height;
     return Scaffold(
+      //! B O D Y
       body: Stack(
         children: [
           Column(
             children: [
+              // BACKGROUND IMAGE
               Expanded(
                 child: Image.asset(
                   'assets/images/login_background_image.png',
@@ -23,6 +28,7 @@ class ScreenLogin extends StatelessWidget {
               ),
             ],
           ),
+          //! CONTENT AREA
           Padding(
             padding: EdgeInsets.symmetric(
               vertical: 35,
@@ -39,9 +45,11 @@ class ScreenLogin extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  //! APP PROMO SECTION
                   Expanded(
                     child: Stack(
                       children: [
+                        // BACKGROUND IMAGE
                         ClipRRect(
                           borderRadius: BorderRadius.circular(30),
                           child: Image.asset(
@@ -71,36 +79,20 @@ class ScreenLogin extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
+                              // PROMOTION TEXTS
                               Text(
                                 'ALIGN. ACCOMPLISH. ASCEND.',
-                                style: GoogleFonts.manrope(
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: 2,
-                                  fontSize: 10,
-                                  color: AppColors.whiteColor,
-                                ),
+                                style: AppTextstyles.loginMiniQuoteText,
                               ),
                               Spacer(),
                               Text(
                                 'Focus\nProductivity\nAchieve More',
-                                style: GoogleFonts.playfairDisplay(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 50,
-                                  color: AppColors.whiteColor,
-                                  height: 1.05,
-                                  letterSpacing: 0,
-                                ),
+                                style: AppTextstyles.loginSuperHeading,
                               ),
                               SizedBox(height: 18),
                               Text(
                                 "You can achieve great things by planning ahead and staying focused.\nStay organized, work smart, and keep moving forward.",
-                                style: GoogleFonts.manrope(
-                                  height: 1.65,
-                                  fontWeight: FontWeight.w100,
-                                  letterSpacing: 1,
-                                  fontSize: 14,
-                                  color: AppColors.lightGreyColor,
-                                ),
+                                style: AppTextstyles.loginQuoteText,
                               ),
                             ],
                           ),
@@ -122,79 +114,90 @@ class ScreenLogin extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // APP NAME
                             Center(
                               child: Text(
                                 'TASKNEXUS',
-                                style: GoogleFonts.manrope(
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.2,
-                                  fontSize: 12,
-                                  color: AppColors.blackColor,
-                                ),
+                                style: AppTextstyles.apptitileText,
                               ),
                             ),
-                            SizedBox(height: screenHeight * 0.13),
+                            SizedBox(height: screenHeight * 0.09),
+                            // WELCOME TEXT
                             Center(
                               child: Text(
                                 'Welcome Back',
-                                style: GoogleFonts.playfairDisplay(
-                                  letterSpacing: 0,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 50,
-                                  color: AppColors.blackColor,
-                                  height: 1.05,
-                                ),
+                                style: AppTextstyles.loginSuperHeading,
                               ),
                             ),
                             SizedBox(height: 8),
+                            // ENTER EMAIL AND PASS TEXT
                             Center(
                               child: Text(
                                 "Enter your email and password to access your account",
-                                style: GoogleFonts.manrope(
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.2,
-                                  wordSpacing: 2,
-                                  fontSize: 12.5,
-                                  color: AppColors.blackColor,
-                                ),
+                                style: AppTextstyles.enterNameAndPasswordText,
                               ),
                             ),
                             SizedBox(height: screenHeight * 0.038),
                             //! EMAIL SECTION
                             Text(
                               "Email",
-                              style: GoogleFonts.manrope(
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 0.2,
-                                fontSize: 16,
-                                color: AppColors.blackColor,
-                              ),
+                              style: AppTextstyles.authFieldHeadings,
                             ),
+                            SizedBox(height: 8),
+                            // EMAIL INPUT FIELD
+                            CustomAuthTextfield(hintText: 'Enter your email'),
+
+                            SizedBox(height: 20),
+                            //! PASSWORD SECTION
+                            Text(
+                              "Password",
+                              style: AppTextstyles.authFieldHeadings,
+                            ),
+                            SizedBox(height: 8),
+                            // PASSWORD INPUT FIELD
+                            CustomAuthTextfield(
+                              hintText: 'Enter your password',
+                              passwordField: true,
+                            ),
+                            SizedBox(height: 8),
+
+                            //! FORGOT PASSWORD BUTTON
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(),
+                                Text(
+                                  "Forgot password ?",
+                                  style: AppTextstyles.authFieldHeadings,
+                                ),
+                              ],
+                            ),
+
+                            SizedBox(height: screenHeight * 0.045),
+                            //! SIGN IN BUTTON
+                            CustomBlackButton(buttonTitle: 'Sign In'),
                             SizedBox(height: 10),
-                            Container(
-                              padding: EdgeInsets.only(left: 18),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(14),
-                                color: const Color.fromARGB(255, 241, 241, 241),
-                              ),
-                              child: TextFormField(
-                                style: GoogleFonts.manrope(
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.2,
-                                  fontSize: 16.5,
-                                  color: AppColors.blackColor,
+
+                            //! GOOGLE SIGN IN BUTTON
+                            CustomGoogleSigninButton(),
+
+                            SizedBox(height: screenHeight * 0.09),
+
+                            //! SIGN UP BUTTON
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Don't have an account?",
+                                  style: AppTextstyles.dontHaveAccountText,
                                 ),
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Enter your email',
-                                  hintStyle: GoogleFonts.manrope(
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: 0.2,
-                                    fontSize: 15,
-                                    color: AppColors.lightGreyColor3,
-                                  ),
+                                SizedBox(width: 4),
+                                Text(
+                                  'Sign Up',
+                                  style: AppTextstyles.authFieldHeadings,
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
