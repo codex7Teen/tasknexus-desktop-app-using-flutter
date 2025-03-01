@@ -136,15 +136,6 @@ class LoginScreenWidgets {
                 CustomAuthTextfield(
                   hintText: 'Enter your email',
                   controller: emailController,
-                  // validator: (value) {
-                  //   if (value == null || value.trim().isEmpty) {
-                  //     return 'Please enter your email address';
-                  //   }
-                  //   if (!LoginScreenWidgets().emailRegex.hasMatch(value)) {
-                  //     return 'Please enter a valid email address';
-                  //   }
-                  //   return null;
-                  // },
                 ),
 
                 SizedBox(height: 10),
@@ -158,15 +149,6 @@ class LoginScreenWidgets {
                   obscureText: obscureText,
                   toggleVisibility: toggleVisibility,
                   isPasswordVisible: !obscureText,
-                  //              validator: (value) {
-                  //   if (value == null || value.trim().isEmpty) {
-                  //     return 'Please enter a password';
-                  //   }
-                  //   if (value.isNotEmpty && value.length < 8) {
-                  //     return 'Password should be atlest 8 characters';
-                  //   }
-                  //   return null;
-                  // },
                 ),
                 SizedBox(height: 5),
 
