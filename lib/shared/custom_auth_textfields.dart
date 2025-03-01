@@ -3,14 +3,21 @@ import 'package:tasknexus/core/config/app_colors.dart';
 import 'package:tasknexus/core/config/app_textstyles.dart';
 
 class CustomAuthTextfield extends StatelessWidget {
-  final bool passwordField;
   final String hintText;
   final TextEditingController? controller;
+  final bool isPasswordVisible;
+  final VoidCallback? toggleVisibility;
+  final bool obscureText;
+  final String? Function(String?)? validator;
 
   const CustomAuthTextfield({
     super.key,
-    this.passwordField = false,
-    required this.hintText, this.controller,
+    required this.hintText,
+    this.controller,
+    this.isPasswordVisible = false,
+    this.toggleVisibility,
+    this.obscureText = false,
+    this.validator,
   });
 
   @override
@@ -21,32 +28,31 @@ class CustomAuthTextfield extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         color: AppColors.lightGreyColor2,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: TextFormField(
-              controller: controller,
-              style: AppTextstyles.textField,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: hintText,
-                hintStyle: AppTextstyles.textFieldHint,
-              ),
-            ),
-          ),
-          passwordField
-              ? Padding(
-                padding: const EdgeInsets.only(left: 10),
-                child: Icon(
-                  size: 22,
-                  Icons.remove_red_eye_outlined,
-                  color: AppColors.lightGreyColor3,
-                ),
-              )
-              : SizedBox(),
-        ],
+      child: TextFormField(
+        maxLength: 30,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        validator: validator,
+        obscureText: obscureText,
+        controller: controller,
+        style: AppTextstyles.textField,
+        decoration: InputDecoration(
+          counterText: '',
+          border: InputBorder.none,
+          hintText: hintText,
+          hintStyle: AppTextstyles.textFieldHint,
+          suffixIcon:
+              toggleVisibility != null
+                  ? GestureDetector(
+                    onTap: toggleVisibility,
+                    child: Icon(
+                      isPasswordVisible
+                          ? Icons.visibility_off_sharp
+                          : Icons.visibility,
+                      color: AppColors.lightGreyColor3,
+                    ),
+                  )
+                  : null,
+        ),
       ),
     );
   }

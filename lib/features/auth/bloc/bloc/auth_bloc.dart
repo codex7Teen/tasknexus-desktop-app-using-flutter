@@ -6,8 +6,13 @@ part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
-    on<AuthEvent>((event, emit) {
-      // TODO: implement event handler
+    //! SEND PASSWORD LINK BLOC
+    on<ForgotPasswordEvent>((event, emit) async {
+      emit(ForgotPasswordLoadingState());
+      await Future.delayed(
+        Duration(milliseconds: 1500),
+        () => emit(ForgotPasswordSuccessState(email: event.email)),
+      );
     });
   }
 }

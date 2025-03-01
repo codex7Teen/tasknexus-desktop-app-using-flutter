@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
 import 'package:tasknexus/features/auth/presentation/screens/login_screen.dart';
 
 //! ENTRY POINT
@@ -12,10 +14,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'TASKNEXUS',
-      home: ScreenLogin(),
+    return MultiBlocProvider(
+      providers: [BlocProvider(create: (context) => AuthBloc())],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'TASKNEXUS',
+        home: ScreenLogin(),
+      ),
     );
   }
 }

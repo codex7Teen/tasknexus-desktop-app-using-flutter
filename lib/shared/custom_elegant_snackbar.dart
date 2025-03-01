@@ -50,18 +50,22 @@ class ElegantSnackbar {
         duration: duration,
         backgroundColor: _getBackgroundColor(type),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         elevation: 6,
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        action: actionLabel != null
-            ? SnackBarAction(
-                label: actionLabel,
-                onPressed: onActionPressed ?? () {},
-                textColor: Colors.white,
-              )
-            : null,
+        margin: EdgeInsets.only(
+          bottom: 16,
+          top: 16,
+          left: MediaQuery.sizeOf(context).width * 0.04,
+          right: MediaQuery.sizeOf(context).width * 0.46,
+        ),
+        action:
+            actionLabel != null
+                ? SnackBarAction(
+                  label: actionLabel,
+                  onPressed: onActionPressed ?? () {},
+                  textColor: Colors.white,
+                )
+                : null,
         animation: _createAnimation(context),
       ),
     );

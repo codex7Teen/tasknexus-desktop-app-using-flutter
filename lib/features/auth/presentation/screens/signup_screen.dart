@@ -5,13 +5,22 @@ import 'package:tasknexus/core/config/app_colors.dart';
 import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widgets.dart';
 import 'package:tasknexus/features/auth/presentation/widgets/signup_screen_widgets.dart';
 
-class ScreenSignUp extends StatelessWidget {
+class ScreenSignUp extends StatefulWidget {
+  const ScreenSignUp({super.key});
+
+  @override
+  State<ScreenSignUp> createState() => _ScreenSignUpState();
+}
+
+class _ScreenSignUpState extends State<ScreenSignUp> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool createPasswordObscureText = true;
+  bool confirmPasswordObscureText = true;
+
   final TextEditingController confirmPasswordController =
       TextEditingController();
-  ScreenSignUp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +63,14 @@ class ScreenSignUp extends StatelessWidget {
                     emailController: emailController,
                     passwordController: passwordController,
                     confirmPasswordController: confirmPasswordController,
+                    confirmPasswordObscureText: confirmPasswordObscureText,
+                    createPasswordObscureText: createPasswordObscureText,
+                    toggleCreatePasswordVisibility: () => setState(() {
+                      createPasswordObscureText = !createPasswordObscureText;
+                    }),
+                    toggleConfirmPasswordVisibility: () => setState(() {
+                      confirmPasswordObscureText = !confirmPasswordObscureText;
+                    }),
                   ),
                 ],
               ),

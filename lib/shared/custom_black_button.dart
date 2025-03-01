@@ -5,7 +5,13 @@ import 'package:tasknexus/core/config/app_textstyles.dart';
 class CustomBlackButton extends StatelessWidget {
   final String buttonTitle;
   final void Function()? onTap;
-  const CustomBlackButton({super.key, required this.buttonTitle, this.onTap});
+  final bool isLoading;
+  const CustomBlackButton({
+    super.key,
+    required this.buttonTitle,
+    this.onTap,
+    this.isLoading = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +25,22 @@ class CustomBlackButton extends StatelessWidget {
           color: AppColors.blackColor,
         ),
         child: Center(
-          child: Text(
-            buttonTitle,
-            style: AppTextstyles.authFieldHeadings.copyWith(
-              color: AppColors.whiteColor,
-            ),
-          ),
+          child:
+              isLoading
+                  ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: AppColors.whiteColor,
+                      strokeWidth: 3,
+                    ),
+                  )
+                  : Text(
+                    buttonTitle,
+                    style: AppTextstyles.authFieldHeadings.copyWith(
+                      color: AppColors.whiteColor,
+                    ),
+                  ),
         ),
       ),
     );

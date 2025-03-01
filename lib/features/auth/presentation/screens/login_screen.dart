@@ -1,12 +1,19 @@
-
 import 'package:flutter/material.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
 import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widgets.dart';
 
-class ScreenLogin extends StatelessWidget {
-   final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
-   ScreenLogin({super.key});
+class ScreenLogin extends StatefulWidget {
+  const ScreenLogin({super.key});
+
+  @override
+  State<ScreenLogin> createState() => _ScreenLoginState();
+}
+
+class _ScreenLoginState extends State<ScreenLogin> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool obscureText = true;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +52,13 @@ class ScreenLogin extends StatelessWidget {
                     screenHeight: screenHeight,
                     context: context,
                     emailController: emailController,
-                    passwordController: passwordController
+                    passwordController: passwordController,
+                    obscureText: obscureText,
+                    toggleVisibility:
+                        () => setState(() {
+                          obscureText = !obscureText;
+                        }),
+                        formKey: formKey
                   ),
                 ],
               ),

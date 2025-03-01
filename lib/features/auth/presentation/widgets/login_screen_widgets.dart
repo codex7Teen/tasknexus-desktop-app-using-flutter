@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
 import 'package:tasknexus/core/config/app_textstyles.dart';
+import 'package:tasknexus/core/utils/app_constants.dart';
 import 'package:tasknexus/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:tasknexus/features/auth/presentation/screens/signup_screen.dart';
 import 'package:tasknexus/shared/custom_auth_textfields.dart';
@@ -10,6 +11,7 @@ import 'package:tasknexus/shared/custom_google_signin_button.dart';
 import 'package:tasknexus/shared/navigation_helper_widget.dart';
 
 class LoginScreenWidgets {
+
   static buildBackgroundImage() {
     return Column(
       children: [
@@ -84,7 +86,10 @@ class LoginScreenWidgets {
     required double screenHeight,
     required BuildContext context,
     required TextEditingController emailController,
-     required TextEditingController passwordController
+    required TextEditingController passwordController,
+    required bool obscureText,
+    required Function()? toggleVisibility,
+    required GlobalKey<FormState> formKey,
   }) {
     return Expanded(
       child: SizedBox(
@@ -92,120 +97,188 @@ class LoginScreenWidgets {
         width: double.infinity,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // APP NAME
-              Center(
-                child: Text('TASKNEXUS', style: AppTextstyles.apptitileText),
-              ),
-              SizedBox(
-                height:
-                    screenHeight > 670
-                        ? screenHeight * 0.09
-                        : screenHeight * 0.01,
-              ),
-              // WELCOME TEXT
-              Center(
-                child: Text(
-                  'Welcome Back',
-                  style: AppTextstyles.loginSuperHeading,
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // APP NAME
+                Center(
+                  child: Text('TASKNEXUS', style: AppTextstyles.apptitileText),
                 ),
-              ),
-              SizedBox(height: 8),
-              // ENTER EMAIL AND PASS TEXT
-              Center(
-                child: Text(
-                  "Enter your email and password to access your account",
-                  style: AppTextstyles.enterNameAndPasswordText,
+                SizedBox(
+                  height:
+                      screenHeight > 670
+                          ? screenHeight * 0.09
+                          : screenHeight * 0.01,
                 ),
-              ),
-              SizedBox(height: screenHeight * 0.038),
-              //! EMAIL SECTION
-              Text("Email", style: AppTextstyles.authFieldHeadings),
-              SizedBox(height: 5),
-              // EMAIL INPUT FIELD
-              CustomAuthTextfield(hintText: 'Enter your email'),
-
-              SizedBox(height: 10),
-              //! PASSWORD SECTION
-              Text("Password", style: AppTextstyles.authFieldHeadings),
-              SizedBox(height: 5),
-              // PASSWORD INPUT FIELD
-              CustomAuthTextfield(
-                hintText: 'Enter your password',
-                passwordField: true,
-              ),
-              SizedBox(height: 5),
-
-              //! FORGOT PASSWORD BUTTON
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(),
-                  GestureDetector(
-                    onTap:
-                        () => NavigationHelper.navigateToWithReplacement(
-                          context,
-                          ScreenForgotPassword(),
-                        ),
-                    child: Text(
-                      "Forgot password ?",
-                      style: AppTextstyles.authFieldHeadings,
-                    ),
+                // WELCOME TEXT
+                Center(
+                  child: Text(
+                    'Welcome Back',
+                    style: AppTextstyles.loginSuperHeading,
                   ),
-                ],
-              ),
-
-              SizedBox(height: screenHeight * 0.045),
-              //! SIGN IN BUTTON
-              CustomBlackButton(buttonTitle: 'Sign In'),
-              SizedBox(height: 10),
-
-              //! GOOGLE SIGN IN BUTTON
-              CustomGoogleSigninButton(
-                onTap:
-                    () => ElegantSnackbar.show(
-                      context,
-                      message: 'This feature will be available soon.',
-                      type: SnackBarType.info,
-                      actionLabel: 'COMING SOON!!!',
-                      duration: Duration(seconds: 2),
-                    ),
-              ),
-
-              SizedBox(
-                height:
-                    screenHeight > 670
-                        ? screenHeight * 0.09
-                        : screenHeight * 0.01,
-              ),
-
-              //! SIGN UP BUTTON
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    "Don't have an account?",
-                    style: AppTextstyles.dontHaveAccountText,
+                ),
+                SizedBox(height: 8),
+                // ENTER EMAIL AND PASS TEXT
+                Center(
+                  child: Text(
+                    "Enter your email and password to access your account",
+                    style: AppTextstyles.enterNameAndPasswordText,
                   ),
-                  SizedBox(width: 4),
-                  GestureDetector(
-                    onTap:
-                        () => NavigationHelper.navigateToWithReplacement(
-                          context,
-                          ScreenSignUp(),
-                        ),
-                    child: Text(
-                      'Sign Up',
-                      style: AppTextstyles.authFieldHeadings,
+                ),
+                SizedBox(height: screenHeight * 0.038),
+                //! EMAIL SECTION
+                Text("Email", style: AppTextstyles.authFieldHeadings),
+                SizedBox(height: 5),
+                // EMAIL INPUT FIELD
+                CustomAuthTextfield(
+                  hintText: 'Enter your email',
+                  controller: emailController,
+                  // validator: (value) {
+                  //   if (value == null || value.trim().isEmpty) {
+                  //     return 'Please enter your email address';
+                  //   }
+                  //   if (!LoginScreenWidgets().emailRegex.hasMatch(value)) {
+                  //     return 'Please enter a valid email address';
+                  //   }
+                  //   return null;
+                  // },
+                ),
+
+                SizedBox(height: 10),
+                //! PASSWORD SECTION
+                Text("Password", style: AppTextstyles.authFieldHeadings),
+                SizedBox(height: 5),
+                // PASSWORD INPUT FIELD
+                CustomAuthTextfield(
+                  controller: passwordController,
+                  hintText: 'Enter your password',
+                  obscureText: obscureText,
+                  toggleVisibility: toggleVisibility,
+                  isPasswordVisible: !obscureText,
+                  //              validator: (value) {
+                  //   if (value == null || value.trim().isEmpty) {
+                  //     return 'Please enter a password';
+                  //   }
+                  //   if (value.isNotEmpty && value.length < 8) {
+                  //     return 'Password should be atlest 8 characters';
+                  //   }
+                  //   return null;
+                  // },
+                ),
+                SizedBox(height: 5),
+
+                //! FORGOT PASSWORD BUTTON
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(),
+                    GestureDetector(
+                      onTap:
+                          () => NavigationHelper.navigateToWithReplacement(
+                            context,
+                            ScreenForgotPassword(),
+                          ),
+                      child: Text(
+                        "Forgot password ?",
+                        style: AppTextstyles.authFieldHeadings,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+
+                SizedBox(height: screenHeight * 0.045),
+                //! SIGN IN BUTTON
+                CustomBlackButton(
+                  buttonTitle: 'Sign In',
+                  onTap: () {
+                    //! TEXT FELD VALIDATIONS
+                    if (passwordController.text.trim().isEmpty &&
+                        emailController.text.trim().isEmpty) {
+                      return ElegantSnackbar.show(
+                        context,
+                        message: 'Please enter your email & password.',
+                        type: SnackBarType.warning,
+                      );
+                    } else if (passwordController.text.trim().isEmpty) {
+                      return ElegantSnackbar.show(
+                        context,
+                        message: 'Please enter your password.',
+                        type: SnackBarType.warning,
+                      );
+                    } else if (passwordController.text.trim().isNotEmpty &&
+                        passwordController.text.trim().length < 8) {
+                      return ElegantSnackbar.show(
+                        context,
+                        message: 'Password should be atleast 8 characters.',
+                        type: SnackBarType.warning,
+                      );
+                    } else if (emailController.text.trim().isEmpty) {
+                      return ElegantSnackbar.show(
+                        context,
+                        message: 'Please enter your email.',
+                        type: SnackBarType.warning,
+                      );
+                    } else if (emailController.text.trim().isNotEmpty &&
+                        !AppConstants().emailRegex.hasMatch(
+                          emailController.text,
+                        )) {
+                      return ElegantSnackbar.show(
+                        context,
+                        message: 'Please enter a valid email.',
+                        type: SnackBarType.warning,
+                      );
+                    }
+                  },
+                ),
+                SizedBox(height: 10),
+
+                //! GOOGLE SIGN IN BUTTON
+                CustomGoogleSigninButton(
+                  onTap:
+                      () => ElegantSnackbar.show(
+                        context,
+                        message: 'This feature will be available soon.',
+                        type: SnackBarType.info,
+                        actionLabel: 'COMING SOON!!!',
+                        duration: Duration(seconds: 2),
+                      ),
+                ),
+
+                SizedBox(
+                  height:
+                      screenHeight > 670
+                          ? screenHeight * 0.09
+                          : screenHeight * 0.01,
+                ),
+
+                //! SIGN UP BUTTON
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account?",
+                      style: AppTextstyles.dontHaveAccountText,
+                    ),
+                    SizedBox(width: 4),
+                    GestureDetector(
+                      onTap:
+                          () => NavigationHelper.navigateToWithReplacement(
+                            context,
+                            ScreenSignUp(),
+                          ),
+                      child: Text(
+                        'Sign Up',
+                        style: AppTextstyles.authFieldHeadings,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
