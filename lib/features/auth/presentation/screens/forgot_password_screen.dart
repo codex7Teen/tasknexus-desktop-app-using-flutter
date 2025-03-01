@@ -4,6 +4,7 @@ import 'package:tasknexus/features/auth/presentation/widgets/forgot_password_scr
 import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widgets.dart';
 
 class ScreenForgotPassword extends StatelessWidget {
+  
   const ScreenForgotPassword({super.key});
 
   @override
