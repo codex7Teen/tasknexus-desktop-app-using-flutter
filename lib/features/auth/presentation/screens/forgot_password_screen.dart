@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
+import 'package:tasknexus/features/auth/presentation/widgets/forgot_password_screen_widgets.dart';
 import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widgets.dart';
 
-class ScreenLogin extends StatelessWidget {
-  const ScreenLogin({super.key});
+class ScreenForgotPassword extends StatelessWidget {
+  const ScreenForgotPassword({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +38,7 @@ class ScreenLogin extends StatelessWidget {
                   LoginScreenWidgets.buildPromoSection(),
 
                   //! FORM SECTION (RIGHT SECTION)
-                  LoginScreenWidgets.buildFormSection(
+                  ForgotPasswordScreenWidgets.buildFormSection(
                     screenWidth: screenWidth,
                     screenHeight: screenHeight,
                     context: context,

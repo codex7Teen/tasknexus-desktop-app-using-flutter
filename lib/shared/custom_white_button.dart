@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
 import 'package:tasknexus/core/config/app_textstyles.dart';
 
-class CustomGoogleSigninButton extends StatelessWidget {
+class CustomWhiteButton extends StatelessWidget {
+  final String buttonTitle;
   final void Function()? onTap;
-  const CustomGoogleSigninButton({super.key, this.onTap});
+  const CustomWhiteButton({super.key, this.onTap, required this.buttonTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +25,12 @@ class CustomGoogleSigninButton extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/icons/google_logo_nobg.png',
+                'assets/icons/back_icon_black.png',
                 fit: BoxFit.contain,
                 width: 22,
               ),
               SizedBox(width: 8),
-              Text('Sign In With Google', style: AppTextstyles.authFieldHeadings),
+              Text(buttonTitle, style: AppTextstyles.authFieldHeadings),
             ],
           ),
         ),
