@@ -83,6 +83,8 @@ class LoginScreenWidgets {
     required double screenWidth,
     required double screenHeight,
     required BuildContext context,
+    required TextEditingController emailController,
+     required TextEditingController passwordController
   }) {
     return Expanded(
       child: SizedBox(

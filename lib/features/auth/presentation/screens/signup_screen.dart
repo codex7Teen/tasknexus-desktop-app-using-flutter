@@ -6,13 +6,18 @@ import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widget
 import 'package:tasknexus/features/auth/presentation/widgets/signup_screen_widgets.dart';
 
 class ScreenSignUp extends StatelessWidget {
-  const ScreenSignUp({super.key});
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  ScreenSignUp({super.key});
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final screenHeight = MediaQuery.sizeOf(context).height;
-        log(screenHeight.round().toString());
+    log(screenHeight.round().toString());
     return Scaffold(
       //! B O D Y
       body: Stack(
@@ -44,7 +49,11 @@ class ScreenSignUp extends StatelessWidget {
                   SignupScreenWidgets.buildFormSection(
                     screenWidth: screenWidth,
                     screenHeight: screenHeight,
-                    context: context
+                    context: context,
+                    nameController: nameController,
+                    emailController: emailController,
+                    passwordController: passwordController,
+                    confirmPasswordController: confirmPasswordController,
                   ),
                 ],
               ),

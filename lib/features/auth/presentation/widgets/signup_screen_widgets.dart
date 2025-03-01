@@ -10,6 +10,10 @@ class SignupScreenWidgets {
     required double screenWidth,
     required double screenHeight,
     required BuildContext context,
+    required TextEditingController nameController,
+     required TextEditingController emailController,
+      required TextEditingController passwordController,
+       required TextEditingController confirmPasswordController,
   }) {
     return Expanded(
       child: SizedBox(
@@ -64,7 +68,7 @@ class SignupScreenWidgets {
               Text("Email", style: AppTextstyles.authFieldHeadings),
               SizedBox(height: 5),
               // EMAIL INPUT FIELD
-              CustomAuthTextfield(hintText: 'Enter your email'),
+              CustomAuthTextfield(hintText: 'Enter your email', controller: emailController),
               SizedBox(height: 10),
 
               //! CREATE PASSWORD SECTION
@@ -74,6 +78,7 @@ class SignupScreenWidgets {
               CustomAuthTextfield(
                 hintText: 'Enter your password',
                 passwordField: true,
+                controller: passwordController,
               ),
               SizedBox(height: 10),
 
@@ -84,6 +89,7 @@ class SignupScreenWidgets {
               CustomAuthTextfield(
                 hintText: 'Confirm your password',
                 passwordField: true,
+                controller: confirmPasswordController,
               ),
 
               SizedBox(

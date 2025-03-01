@@ -1,11 +1,12 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
 import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widgets.dart';
 
 class ScreenLogin extends StatelessWidget {
-  const ScreenLogin({super.key});
+   final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+   ScreenLogin({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +44,8 @@ class ScreenLogin extends StatelessWidget {
                     screenWidth: screenWidth,
                     screenHeight: screenHeight,
                     context: context,
+                    emailController: emailController,
+                    passwordController: passwordController
                   ),
                 ],
               ),

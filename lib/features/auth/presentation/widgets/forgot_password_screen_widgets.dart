@@ -11,6 +11,7 @@ class ForgotPasswordScreenWidgets {
     required double screenWidth,
     required double screenHeight,
     required BuildContext context,
+    required TextEditingController emailController
   }) {
     return Expanded(
       child: SizedBox(

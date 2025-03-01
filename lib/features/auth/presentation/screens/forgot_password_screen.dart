@@ -4,8 +4,8 @@ import 'package:tasknexus/features/auth/presentation/widgets/forgot_password_scr
 import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widgets.dart';
 
 class ScreenForgotPassword extends StatelessWidget {
-  
-  const ScreenForgotPassword({super.key});
+   final TextEditingController emailController = TextEditingController();
+   ScreenForgotPassword({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +43,7 @@ class ScreenForgotPassword extends StatelessWidget {
                     screenWidth: screenWidth,
                     screenHeight: screenHeight,
                     context: context,
+                    emailController: emailController
                   ),
                 ],
               ),

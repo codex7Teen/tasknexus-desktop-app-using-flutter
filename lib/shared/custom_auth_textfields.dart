@@ -5,10 +5,12 @@ import 'package:tasknexus/core/config/app_textstyles.dart';
 class CustomAuthTextfield extends StatelessWidget {
   final bool passwordField;
   final String hintText;
+  final TextEditingController? controller;
+
   const CustomAuthTextfield({
     super.key,
     this.passwordField = false,
-    required this.hintText,
+    required this.hintText, this.controller,
   });
 
   @override
@@ -25,6 +27,7 @@ class CustomAuthTextfield extends StatelessWidget {
         children: [
           Expanded(
             child: TextFormField(
+              controller: controller,
               style: AppTextstyles.textField,
               decoration: InputDecoration(
                 border: InputBorder.none,
