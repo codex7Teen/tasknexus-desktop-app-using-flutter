@@ -4,7 +4,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:tasknexus/data/models/user_model.dart';
 import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
 import 'package:tasknexus/features/auth/presentation/screens/auth_wrapper_screen.dart';
-import 'package:tasknexus/features/auth/presentation/screens/login_screen.dart';
 
 //! ENTRY POINT
 void main() async {
@@ -25,13 +24,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //! BLOC PROVIDERS
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => AuthBloc()..add(CheckUserLoggedIn()))],
+      providers: [
+        BlocProvider(create: (context) => AuthBloc()..add(CheckUserLoggedIn())),
+      ],
       child: MaterialApp(
         theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
         debugShowCheckedModeBanner: false,
         title: 'TASKNEXUS',
-        home: AuthWrapperScreen()
+        // WRAPPER FOR CHECKING, USER LOGGED IN STATE
+        home: AuthWrapperScreen(),
       ),
     );
   }
