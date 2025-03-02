@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasknexus/core/config/app_textstyles.dart';
 import 'package:tasknexus/core/utils/app_constants.dart';
+import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
 import 'package:tasknexus/features/auth/presentation/screens/login_screen.dart';
 import 'package:tasknexus/shared/custom_auth_textfields.dart';
 import 'package:tasknexus/shared/custom_black_button.dart';
@@ -183,6 +185,15 @@ class SignupScreenWidgets {
                       context,
                       message: "Entered passwords doesn't match",
                       type: SnackBarType.warning,
+                    );
+                  } else {
+                    //! SIGN UP USER
+                    context.read<AuthBloc>().add(
+                      SignUpEvent(
+                        name: nameController.text.trim(),
+                        email: emailController.text.trim(),
+                        password: confirmPasswordController.text.trim(),
+                      ),
                     );
                   }
                 },

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
 import 'package:tasknexus/core/config/app_textstyles.dart';
 import 'package:tasknexus/core/utils/app_constants.dart';
+import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
 import 'package:tasknexus/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:tasknexus/features/auth/presentation/screens/signup_screen.dart';
 import 'package:tasknexus/shared/custom_auth_textfields.dart';
@@ -11,7 +13,6 @@ import 'package:tasknexus/shared/custom_google_signin_button.dart';
 import 'package:tasknexus/shared/navigation_helper_widget.dart';
 
 class LoginScreenWidgets {
-
   static buildBackgroundImage() {
     return Column(
       children: [
@@ -211,6 +212,14 @@ class LoginScreenWidgets {
                         context,
                         message: 'Please enter a valid email.',
                         type: SnackBarType.warning,
+                      );
+                    } else {
+                      //! LOG IN
+                      context.read<AuthBloc>().add(
+                        LoginEvent(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim(),
+                        ),
                       );
                     }
                   },
