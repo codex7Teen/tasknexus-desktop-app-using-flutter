@@ -19,12 +19,12 @@ class NavigationHelper {
   }
 
   //! SMOOTH PUSH REPLACEMENT NAVIGATION
-  static void navigateToWithoutReplacement(
+  static Future<T?> navigateToWithoutReplacement<T>(
     BuildContext context,
     Widget page, {
     int transitionDuration = 350,
-  }) {
-    Navigator.of(context).push(
+  }) async {
+    return await Navigator.of(context).push<T>(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => page,
         transitionDuration: Duration(milliseconds: transitionDuration),

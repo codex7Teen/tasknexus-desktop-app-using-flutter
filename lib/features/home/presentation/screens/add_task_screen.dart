@@ -217,7 +217,10 @@ class _ScreenAddTaskState extends State<ScreenAddTask> {
             message: state.message,
             type: SnackBarType.success,
           );
-         Future.delayed(Duration(milliseconds: 500), () => Navigator.pop(context));
+          Future.delayed(
+            Duration(milliseconds: 500),
+            () => Navigator.pop(context, true),
+          );
         } else if (state is AddTaskFailure) {
           // Show error message
           ElegantSnackbar.show(

@@ -53,7 +53,13 @@ class _ScreenSignUpState extends State<ScreenSignUp> {
             );
             // Navigate to home
             Future.delayed(const Duration(milliseconds: 500), () {
-              NavigationHelper.navigateToWithReplacement(context, ScreenHome());
+              NavigationHelper.navigateToWithReplacement(
+                context,
+                ScreenHome(
+                  userEmail: state.user.email,
+                  userName: state.user.name,
+                ),
+              );
             });
           } else if (state is AuthFailure) {
             // Show error snackbar

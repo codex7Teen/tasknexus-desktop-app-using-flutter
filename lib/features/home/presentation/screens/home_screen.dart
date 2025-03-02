@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
 import 'package:tasknexus/core/config/app_textstyles.dart';
+import 'package:tasknexus/data/models/task_model.dart';
+import 'package:tasknexus/data/services/task_service.dart';
+import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
+import 'package:tasknexus/features/auth/presentation/screens/login_screen.dart';
 import 'package:tasknexus/features/home/presentation/screens/add_task_screen.dart';
 import 'package:tasknexus/shared/custom_elegant_snackbar.dart';
 import 'package:tasknexus/shared/navigation_helper_widget.dart';
 
 class ScreenHome extends StatefulWidget {
-  const ScreenHome({super.key});
+  final String userEmail;
+  final String userName;
+
+  const ScreenHome({
+    super.key,
+    required this.userEmail,
+    required this.userName,
+  });
 
   @override
   State<ScreenHome> createState() => _ScreenHomeState();
@@ -15,6 +27,80 @@ class ScreenHome extends StatefulWidget {
 class _ScreenHomeState extends State<ScreenHome> {
   // Current selected sidebar item
   String _currentSidebarItem = 'Scheduled Tasks';
+
+  // Task service for data operations
+  final TaskService _taskService = TaskService();
+
+  // List to hold tasks
+  List<TaskModel> _tasks = [];
+
+  // Loading state
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTasks();
+  }
+
+  // Load tasks based on the current sidebar selection
+  Future<void> _loadTasks() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      List<TaskModel> tasks = [];
+
+      // Load different tasks based on sidebar selection
+      switch (_currentSidebarItem) {
+        case 'Scheduled Tasks':
+          // Get tasks with "Not Started" or "In Progress" status
+          final notStartedTasks = await _taskService.getTasksByStatus(
+            widget.userEmail,
+            'Not Started',
+          );
+          final inProgressTasks = await _taskService.getTasksByStatus(
+            widget.userEmail,
+            'In Progress',
+          );
+          tasks = [...notStartedTasks, ...inProgressTasks];
+          break;
+
+        case 'Completed Tasks':
+          tasks = await _taskService.getTasksByStatus(
+            widget.userEmail,
+            'Completed',
+          );
+          break;
+
+        case 'With-held Tasks':
+          tasks = await _taskService.getTasksByStatus(
+            widget.userEmail,
+            'With-held',
+          );
+          break;
+
+        default:
+          tasks = await _taskService.getTasks(widget.userEmail);
+      }
+
+      setState(() {
+        _tasks = tasks;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+
+      ElegantSnackbar.show(
+        context,
+        message: 'Error loading tasks: $e',
+        type: SnackBarType.error,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,19 +174,31 @@ class _ScreenHomeState extends State<ScreenHome> {
     final isSelected = _currentSidebarItem == title;
 
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (isLogout) {
+          // logout login here
+          context.read<AuthBloc>().add(LogoutEvent());
+          await Future.delayed(
+            Duration(milliseconds: 500),
+            () => NavigationHelper.navigateToWithReplacement(
+              context,
+              ScreenLogin(),
+            ),
+          );
           // Handle logout
           ElegantSnackbar.show(
+            actionLabel: 'LOGGED-OUT!',
+            duration: Duration(seconds: 2),
             context,
-            message: 'Logging out...',
+            message: 'Logout Success...',
             type: SnackBarType.info,
           );
-          // Add actual logout logic here
         } else {
           setState(() {
             _currentSidebarItem = title;
           });
+          // Reload tasks when sidebar item changes
+          _loadTasks();
         }
       },
       child: Container(
@@ -169,14 +267,19 @@ class _ScreenHomeState extends State<ScreenHome> {
             children: [
               // Add Task button
               ElevatedButton.icon(
-                onPressed: () {
-                  NavigationHelper.navigateToWithoutReplacement(
-                    context,
-                    const ScreenAddTask(
-                      userEmail: 'djdennis@gmail.com',
-                      userName: 'dennis',
-                    ),
-                  );
+                onPressed: () async {
+                  final result =
+                      await NavigationHelper.navigateToWithoutReplacement(
+                        context,
+                        ScreenAddTask(
+                          userEmail: widget.userEmail,
+                          userName: widget.userName,
+                        ),
+                      );
+                  // Reload tasks after returning from add task screen\
+                  if (result) {
+                    await _loadTasks();
+                  }
                 },
                 icon: const Icon(Icons.add, color: AppColors.whiteColor),
                 label: Text(
@@ -265,40 +368,6 @@ class _ScreenHomeState extends State<ScreenHome> {
   }
 
   Widget _buildDashboard(double screenWidth, double screenHeight) {
-    // Mock data for the dashboard
-    final tasks = [
-      {
-        'urn': 'TN-2023-001',
-        'name': 'Website Redesign',
-        'assignedBy': 'John Smith',
-        'assignedTo': 'Sarah Johnson',
-        'commencementDate': '01/03/2023',
-        'dueDate': '15/03/2023',
-        'clientName': 'Acme Corp',
-        'status': 'In Progress',
-      },
-      {
-        'urn': 'TN-2023-002',
-        'name': 'Mobile App Development',
-        'assignedBy': 'Michael Brown',
-        'assignedTo': 'David Wilson',
-        'commencementDate': '05/03/2023',
-        'dueDate': '20/03/2023',
-        'clientName': 'XYZ Industries',
-        'status': 'Not Started',
-      },
-      {
-        'urn': 'TN-2023-003',
-        'name': 'Database Migration',
-        'assignedBy': 'Emma Davis',
-        'assignedTo': 'James Miller',
-        'commencementDate': '08/03/2023',
-        'dueDate': '22/03/2023',
-        'clientName': 'Tech Solutions',
-        'status': 'In Progress',
-      },
-    ];
-
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -324,6 +393,9 @@ class _ScreenHomeState extends State<ScreenHome> {
                           .copyWith(color: Colors.grey, fontSize: 14),
                       border: InputBorder.none,
                     ),
+                    onChanged: (value) {
+                      // TODO: Implement search functionality
+                    },
                   ),
                 ),
               ],
@@ -346,141 +418,263 @@ class _ScreenHomeState extends State<ScreenHome> {
                   ),
                 ],
               ),
-              child: SingleChildScrollView(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: DataTable(
-                    headingRowColor: WidgetStateProperty.all(Colors.grey[100]),
-                    dataRowMaxHeight: 60,
-                    headingRowHeight: 50,
-                    columnSpacing: 30,
-                    columns: const [
-                      DataColumn(label: Text('URN')),
-                      DataColumn(label: Text('Task')),
-                      DataColumn(label: Text('Assigned By')),
-                      DataColumn(label: Text('Assigned To')),
-                      DataColumn(label: Text('Start Date')),
-                      DataColumn(label: Text('Due Date')),
-                      DataColumn(label: Text('Client')),
-                      DataColumn(label: Text('Status')),
-                      DataColumn(label: Text('Actions')),
-                    ],
-                    rows:
-                        tasks.map((task) {
-                          return DataRow(
-                            cells: [
-                              DataCell(Text(task['urn'] ?? '')),
-                              DataCell(Text(task['name'] ?? '')),
-                              DataCell(Text(task['assignedBy'] ?? '')),
-                              DataCell(Text(task['assignedTo'] ?? '')),
-                              DataCell(Text(task['commencementDate'] ?? '')),
-                              DataCell(Text(task['dueDate'] ?? '')),
-                              DataCell(
-                                GestureDetector(
-                                  onTap:
-                                      () => _showClientDetailsDialog(
-                                        context,
-                                        task['clientName'] ?? '',
-                                      ),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        task['clientName'] ?? '',
-                                        style: const TextStyle(
-                                          color: Colors.blue,
-                                          decoration: TextDecoration.underline,
+              child:
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _tasks.isEmpty
+                      ? _buildEmptyState()
+                      : SingleChildScrollView(
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: DataTable(
+                            headingRowColor: WidgetStateProperty.all(
+                              Colors.grey[100],
+                            ),
+                            dataRowMaxHeight: 60,
+                            headingRowHeight: 50,
+                            columnSpacing: 30,
+                            columns: const [
+                              DataColumn(label: Text('URN')),
+                              DataColumn(label: Text('Task')),
+                              DataColumn(label: Text('Assigned By')),
+                              DataColumn(label: Text('Assigned To')),
+                              DataColumn(label: Text('Start Date')),
+                              DataColumn(label: Text('Due Date')),
+                              DataColumn(label: Text('Client')),
+                              DataColumn(label: Text('Status')),
+                              DataColumn(label: Text('Actions')),
+                            ],
+                            rows:
+                                _tasks.map((task) {
+                                  return DataRow(
+                                    cells: [
+                                      DataCell(Text(task.urn)),
+                                      DataCell(Text(task.name)),
+                                      DataCell(Text(task.assignedBy)),
+                                      DataCell(Text(task.assignedTo)),
+                                      DataCell(Text(task.commencementDate)),
+                                      DataCell(Text(task.dueDate)),
+                                      DataCell(
+                                        GestureDetector(
+                                          onTap:
+                                              () => _showClientDetailsDialog(
+                                                context,
+                                                task.clientName,
+                                                task.clientContacts,
+                                              ),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                task.clientName,
+                                                style: const TextStyle(
+                                                  color: Colors.blue,
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 5),
+                                              const Icon(
+                                                Icons.info_outline,
+                                                size: 16,
+                                                color: Colors.blue,
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                      const SizedBox(width: 5),
-                                      const Icon(
-                                        Icons.info_outline,
-                                        size: 16,
-                                        color: Colors.blue,
+                                      DataCell(
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                _getStatusColor(task.status)[0],
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            task.status,
+                                            style: TextStyle(
+                                              color:
+                                                  _getStatusColor(
+                                                    task.status,
+                                                  )[1],
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      DataCell(
+                                        Row(
+                                          children: [
+                                            // Only show Start button for Not Started tasks
+                                            if (task.status == 'Not Started')
+                                              _buildActionButton(
+                                                'Start',
+                                                Icons.play_arrow,
+                                                Colors.green,
+                                                () => _updateTaskStatus(
+                                                  task,
+                                                  'In Progress',
+                                                ),
+                                              ),
+
+                                            // Only show Complete button for In Progress tasks
+                                            if (task.status == 'In Progress')
+                                              _buildActionButton(
+                                                'Complete',
+                                                Icons.check,
+                                                Colors.blue,
+                                                () => _updateTaskStatus(
+                                                  task,
+                                                  'Completed',
+                                                ),
+                                              ),
+
+                                            const SizedBox(width: 5),
+
+                                            _buildActionButton(
+                                              'Edit',
+                                              Icons.edit,
+                                              Colors.blue,
+                                              () async {
+                                                NavigationHelper.navigateToWithoutReplacement(
+                                                  context,
+                                                  ScreenAddTask(
+                                                    userEmail: widget.userEmail,
+                                                    userName: widget.userName,
+                                                    taskUrn: task.urn,
+                                                  ),
+                                                );
+
+                                                // Reload tasks after returning from add task screen
+
+                                                await _loadTasks();
+                                              },
+                                            ),
+
+                                            const SizedBox(width: 5),
+
+                                            _buildActionButton(
+                                              'With-held',
+                                              Icons.delete,
+                                              Colors.red,
+                                              () => _updateTaskStatus(
+                                                task,
+                                                'With-held',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color:
-                                        task['status'] == 'In Progress'
-                                            ? Colors.blue[50]
-                                            : Colors.orange[50],
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    task['status'] ?? '',
-                                    style: TextStyle(
-                                      color:
-                                          task['status'] == 'In Progress'
-                                              ? Colors.blue[700]
-                                              : Colors.orange[700],
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    _buildActionButton(
-                                      'Start',
-                                      Icons.play_arrow,
-                                      Colors.green,
-                                      () {
-                                        ElegantSnackbar.show(
-                                          context,
-                                          message:
-                                              'Starting task: ${task['name']}',
-                                          type: SnackBarType.info,
-                                        );
-                                      },
-                                    ),
-                                    const SizedBox(width: 5),
-                                    _buildActionButton(
-                                      'Edit',
-                                      Icons.edit,
-                                      Colors.blue,
-                                      () {
-                                        NavigationHelper.navigateToWithoutReplacement(
-                                          context,
-                                          ScreenAddTask(
-                                            userEmail: 'djdennis@gmail.com',
-                                            userName: 'DENNII',
-                                            taskUrn: 'TN-2025-6974',
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    const SizedBox(width: 5),
-                                    _buildActionButton(
-                                      'Delete',
-                                      Icons.delete,
-                                      Colors.red,
-                                      () {
-                                        ElegantSnackbar.show(
-                                          context,
-                                          message:
-                                              'Moving task to With-held Tasks',
-                                          type: SnackBarType.warning,
-                                        );
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                  ),
+                                  );
+                                }).toList(),
+                          ),
+                        ),
+                      ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper method to get status colors
+  List<Color> _getStatusColor(String status) {
+    switch (status) {
+      case 'Not Started':
+        return [Colors.orange[50]!, Colors.orange[700]!];
+      case 'In Progress':
+        return [Colors.blue[50]!, Colors.blue[700]!];
+      case 'Completed':
+        return [Colors.green[50]!, Colors.green[700]!];
+      case 'With-held':
+        return [Colors.red[50]!, Colors.red[700]!];
+      default:
+        return [Colors.grey[50]!, Colors.grey[700]!];
+    }
+  }
+
+  // Update task status
+  Future<void> _updateTaskStatus(TaskModel task, String newStatus) async {
+    try {
+      await _taskService.updateTaskStatus(
+        task.urn,
+        widget.userEmail,
+        newStatus,
+      );
+
+      ElegantSnackbar.show(
+        context,
+        message: 'Task status updated to $newStatus',
+        type: SnackBarType.success,
+      );
+
+      // Reload tasks to reflect the change
+      _loadTasks();
+    } catch (e) {
+      ElegantSnackbar.show(
+        context,
+        message: 'Error updating task status: $e',
+        type: SnackBarType.error,
+      );
+    }
+  }
+
+  // Widget to display when no tasks are available
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.task_alt, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'No ${_currentSidebarItem.toLowerCase()} found',
+            style: AppTextstyles.loginSuperHeading.copyWith(
+              fontSize: 18,
+              color: Colors.grey[700],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Add a new task to get started',
+            style: AppTextstyles.enterNameAndPasswordText.copyWith(
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () async {
+              NavigationHelper.navigateToWithoutReplacement(
+                context,
+                ScreenAddTask(
+                  userEmail: widget.userEmail,
+                  userName: widget.userName,
                 ),
+              );
+
+              // Reload tasks after returning from add task screen
+
+              await _loadTasks();
+            },
+            icon: const Icon(Icons.add, color: AppColors.whiteColor),
+            label: Text(
+              'Add New Task',
+              style: AppTextstyles.enterNameAndPasswordText.copyWith(
+                color: AppColors.whiteColor,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.blackColor,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
               ),
             ),
           ),
@@ -511,26 +705,11 @@ class _ScreenHomeState extends State<ScreenHome> {
     );
   }
 
-  void _showClientDetailsDialog(BuildContext context, String clientName) {
-    // Mock client details
-    final clientDetails = [
-      {
-        'name': 'John Smith',
-        'designation': 'CEO',
-        'email': 'john.smith@example.com',
-      },
-      {
-        'name': 'Emily Johnson',
-        'designation': 'Project Manager',
-        'email': 'emily.j@example.com',
-      },
-      {
-        'name': 'Michael Brown',
-        'designation': 'Technical Lead',
-        'email': 'michael.b@example.com',
-      },
-    ];
-
+  void _showClientDetailsDialog(
+    BuildContext context,
+    String clientName,
+    List<dynamic> clientContacts,
+  ) {
     showDialog(
       context: context,
       builder:
@@ -587,53 +766,68 @@ class _ScreenHomeState extends State<ScreenHome> {
                     ),
                   ),
 
-                  // Table content
+                  // Client contacts list
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: clientDetails.length,
-                      itemBuilder: (context, index) {
-                        final detail = clientDetails[index];
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                            horizontal: 15,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Colors.grey[200]!,
-                                width: 1,
+                    child:
+                        clientContacts.isEmpty
+                            ? Center(
+                              child: Text(
+                                'No contacts available',
+                                style: AppTextstyles.enterNameAndPasswordText
+                                    .copyWith(color: Colors.grey),
                               ),
+                            )
+                            : ListView.builder(
+                              itemCount: clientContacts.length,
+                              itemBuilder: (context, index) {
+                                final contact = clientContacts[index];
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: 15,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: Colors.grey[200]!,
+                                        width: 1,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        flex: 3,
+                                        child: Text(
+                                          contact.name,
+                                          style:
+                                              AppTextstyles
+                                                  .enterNameAndPasswordText,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 3,
+                                        child: Text(
+                                          contact.designation,
+                                          style:
+                                              AppTextstyles
+                                                  .enterNameAndPasswordText,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 4,
+                                        child: Text(
+                                          contact.email,
+                                          style:
+                                              AppTextstyles
+                                                  .enterNameAndPasswordText,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: Text(
-                                  detail['name'] ?? '',
-                                  style: AppTextstyles.enterNameAndPasswordText,
-                                ),
-                              ),
-                              Expanded(
-                                flex: 3,
-                                child: Text(
-                                  detail['designation'] ?? '',
-                                  style: AppTextstyles.enterNameAndPasswordText,
-                                ),
-                              ),
-                              Expanded(
-                                flex: 4,
-                                child: Text(
-                                  detail['email'] ?? '',
-                                  style: AppTextstyles.enterNameAndPasswordText,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
                   ),
                 ],
               ),
