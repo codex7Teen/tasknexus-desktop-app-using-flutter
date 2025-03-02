@@ -23,20 +23,20 @@ class _ScreenHomeState extends State<ScreenHome> {
 
     return Scaffold(
       body: Container(
-        color: AppColors.whiteColor,
+        color: Colors.white,
         child: Row(
           children: [
-            // Left sidebar
+            //! L E F T - S I D E B A R
             _buildSidebar(screenHeight),
 
-            // Main content area
+            //! M A I N - C O N T E N T   A R E A
             Expanded(
               child: Column(
                 children: [
-                  // Top bar with user profile and add task button
+                  //! TOP BAR (CUSTOM APP BAR LIKE TOP BAR)
                   _buildTopBar(context),
 
-                  // Dashboard content
+                  //! DASHBOARD
                   Expanded(child: _buildDashboard(screenWidth, screenHeight)),
                 ],
               ),
@@ -140,6 +140,7 @@ class _ScreenHomeState extends State<ScreenHome> {
     );
   }
 
+  //! TOP BAR (APP BAR LIKE ONE)
   Widget _buildTopBar(BuildContext context) {
     return Container(
       height: 70,
@@ -157,13 +158,13 @@ class _ScreenHomeState extends State<ScreenHome> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Page title
+          //! Page title
           Text(
             _currentSidebarItem,
             style: AppTextstyles.loginSuperHeading.copyWith(fontSize: 22),
           ),
 
-          // Right side controls
+          //! Right side controls
           Row(
             children: [
               // Add Task button
@@ -171,7 +172,10 @@ class _ScreenHomeState extends State<ScreenHome> {
                 onPressed: () {
                   NavigationHelper.navigateToWithoutReplacement(
                     context,
-                    const ScreenAddTask(),
+                    const ScreenAddTask(
+                      userEmail: 'djdennis@gmail.com',
+                      userName: 'dennis',
+                    ),
                   );
                 },
                 icon: const Icon(Icons.add, color: AppColors.whiteColor),
@@ -300,60 +304,32 @@ class _ScreenHomeState extends State<ScreenHome> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Filter and search area
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  height: 45,
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.search, color: Colors.grey),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Search tasks...',
-                            hintStyle: AppTextstyles.enterNameAndPasswordText
-                                .copyWith(color: Colors.grey, fontSize: 14),
-                            border: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 15),
-              Container(
-                height: 45,
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    hint: Text(
-                      'Filter: All',
-                      style: AppTextstyles.enterNameAndPasswordText.copyWith(
-                        color: AppColors.blackColor,
-                        fontSize: 14,
-                      ),
+          //! SEARCH AREA
+          Container(
+            height: 45,
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.search, color: Colors.grey),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search tasks...',
+                      hintStyle: AppTextstyles.enterNameAndPasswordText
+                          .copyWith(color: Colors.grey, fontSize: 14),
+                      border: InputBorder.none,
                     ),
-                    icon: const Icon(Icons.filter_list),
-                    items: const [],
-                    onChanged: (value) {},
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+
           const SizedBox(height: 20),
 
           // Tasks table
@@ -364,139 +340,146 @@ class _ScreenHomeState extends State<ScreenHome> {
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: AppColors.blackColor.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: SingleChildScrollView(
-                child: DataTable(
-                  headingRowColor: WidgetStateProperty.all(Colors.grey[100]),
-                  dataRowMaxHeight: 60,
-                  headingRowHeight: 50,
-                  columnSpacing: 20,
-                  columns: const [
-                    DataColumn(label: Text('URN')),
-                    DataColumn(label: Text('Task')),
-                    DataColumn(label: Text('Assigned By')),
-                    DataColumn(label: Text('Assigned To')),
-                    DataColumn(label: Text('Start Date')),
-                    DataColumn(label: Text('Due Date')),
-                    DataColumn(label: Text('Client')),
-                    DataColumn(label: Text('Status')),
-                    DataColumn(label: Text('Actions')),
-                  ],
-                  rows:
-                      tasks.map((task) {
-                        return DataRow(
-                          cells: [
-                            DataCell(Text(task['urn'] ?? '')),
-                            DataCell(Text(task['name'] ?? '')),
-                            DataCell(Text(task['assignedBy'] ?? '')),
-                            DataCell(Text(task['assignedTo'] ?? '')),
-                            DataCell(Text(task['commencementDate'] ?? '')),
-                            DataCell(Text(task['dueDate'] ?? '')),
-                            DataCell(
-                              GestureDetector(
-                                onTap:
-                                    () => _showClientDetailsDialog(
-                                      context,
-                                      task['clientName'] ?? '',
-                                    ),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      task['clientName'] ?? '',
-                                      style: const TextStyle(
-                                        color: Colors.blue,
-                                        decoration: TextDecoration.underline,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: DataTable(
+                    headingRowColor: WidgetStateProperty.all(Colors.grey[100]),
+                    dataRowMaxHeight: 60,
+                    headingRowHeight: 50,
+                    columnSpacing: 30,
+                    columns: const [
+                      DataColumn(label: Text('URN')),
+                      DataColumn(label: Text('Task')),
+                      DataColumn(label: Text('Assigned By')),
+                      DataColumn(label: Text('Assigned To')),
+                      DataColumn(label: Text('Start Date')),
+                      DataColumn(label: Text('Due Date')),
+                      DataColumn(label: Text('Client')),
+                      DataColumn(label: Text('Status')),
+                      DataColumn(label: Text('Actions')),
+                    ],
+                    rows:
+                        tasks.map((task) {
+                          return DataRow(
+                            cells: [
+                              DataCell(Text(task['urn'] ?? '')),
+                              DataCell(Text(task['name'] ?? '')),
+                              DataCell(Text(task['assignedBy'] ?? '')),
+                              DataCell(Text(task['assignedTo'] ?? '')),
+                              DataCell(Text(task['commencementDate'] ?? '')),
+                              DataCell(Text(task['dueDate'] ?? '')),
+                              DataCell(
+                                GestureDetector(
+                                  onTap:
+                                      () => _showClientDetailsDialog(
+                                        context,
+                                        task['clientName'] ?? '',
                                       ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        task['clientName'] ?? '',
+                                        style: const TextStyle(
+                                          color: Colors.blue,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      const Icon(
+                                        Icons.info_outline,
+                                        size: 16,
+                                        color: Colors.blue,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        task['status'] == 'In Progress'
+                                            ? Colors.blue[50]
+                                            : Colors.orange[50],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    task['status'] ?? '',
+                                    style: TextStyle(
+                                      color:
+                                          task['status'] == 'In Progress'
+                                              ? Colors.blue[700]
+                                              : Colors.orange[700],
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              DataCell(
+                                Row(
+                                  children: [
+                                    _buildActionButton(
+                                      'Start',
+                                      Icons.play_arrow,
+                                      Colors.green,
+                                      () {
+                                        ElegantSnackbar.show(
+                                          context,
+                                          message:
+                                              'Starting task: ${task['name']}',
+                                          type: SnackBarType.info,
+                                        );
+                                      },
                                     ),
                                     const SizedBox(width: 5),
-                                    const Icon(
-                                      Icons.info_outline,
-                                      size: 16,
-                                      color: Colors.blue,
+                                    _buildActionButton(
+                                      'Edit',
+                                      Icons.edit,
+                                      Colors.blue,
+                                      () {
+                                        NavigationHelper.navigateToWithoutReplacement(
+                                          context,
+                                          ScreenAddTask(
+                                            userEmail: 'djdennis@gmail.com',
+                                            userName: 'DENNII',
+                                            taskUrn: 'TN-2025-6974',
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    const SizedBox(width: 5),
+                                    _buildActionButton(
+                                      'Delete',
+                                      Icons.delete,
+                                      Colors.red,
+                                      () {
+                                        ElegantSnackbar.show(
+                                          context,
+                                          message:
+                                              'Moving task to With-held Tasks',
+                                          type: SnackBarType.warning,
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
-                            DataCell(
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      task['status'] == 'In Progress'
-                                          ? Colors.blue[50]
-                                          : Colors.orange[50],
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  task['status'] ?? '',
-                                  style: TextStyle(
-                                    color:
-                                        task['status'] == 'In Progress'
-                                            ? Colors.blue[700]
-                                            : Colors.orange[700],
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            DataCell(
-                              Row(
-                                children: [
-                                  _buildActionButton(
-                                    'Start',
-                                    Icons.play_arrow,
-                                    Colors.green,
-                                    () {
-                                      ElegantSnackbar.show(
-                                        context,
-                                        message:
-                                            'Starting task: ${task['name']}',
-                                        type: SnackBarType.info,
-                                      );
-                                    },
-                                  ),
-                                  const SizedBox(width: 5),
-                                  _buildActionButton(
-                                    'Edit',
-                                    Icons.edit,
-                                    Colors.blue,
-                                    () {
-                                      NavigationHelper.navigateToWithoutReplacement(
-                                        context,
-                                        ScreenAddTask(taskToEdit: task),
-                                      );
-                                    },
-                                  ),
-                                  const SizedBox(width: 5),
-                                  _buildActionButton(
-                                    'Delete',
-                                    Icons.delete,
-                                    Colors.red,
-                                    () {
-                                      ElegantSnackbar.show(
-                                        context,
-                                        message:
-                                            'Moving task to With-held Tasks',
-                                        type: SnackBarType.warning,
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      }).toList(),
+                            ],
+                          );
+                        }).toList(),
+                  ),
                 ),
               ),
             ),

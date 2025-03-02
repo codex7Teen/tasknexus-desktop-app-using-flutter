@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tasknexus/data/models/client_contact_model.dart';
+import 'package:tasknexus/data/models/task_model.dart';
 import 'package:tasknexus/data/models/user_model.dart';
 import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
 import 'package:tasknexus/features/auth/presentation/screens/auth_wrapper_screen.dart';
+import 'package:tasknexus/features/home/bloc/bloc/add_task_bloc.dart';
 
 //! ENTRY POINT
 void main() async {
@@ -14,6 +17,8 @@ void main() async {
 
   // REGISTER HIVE ADAPTER
   Hive.registerAdapter(UserModelAdapter());
+  Hive.registerAdapter(TaskModelAdapter());
+  Hive.registerAdapter(ClientContactModelAdapter());
 
   runApp(const MyApp());
 }
@@ -28,6 +33,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => AuthBloc()..add(CheckUserLoggedIn())),
+        BlocProvider(create: (context) => AddTaskBloc())
       ],
       child: MaterialApp(
         theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
