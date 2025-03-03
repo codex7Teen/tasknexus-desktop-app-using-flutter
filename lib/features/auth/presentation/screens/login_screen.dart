@@ -5,7 +5,6 @@ import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
 import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widgets.dart';
 import 'package:tasknexus/features/home/presentation/screens/home_screen.dart';
 import 'package:tasknexus/shared/custom_elegant_snackbar.dart';
-import 'package:tasknexus/shared/navigation_helper_widget.dart';
 
 class ScreenLogin extends StatefulWidget {
   const ScreenLogin({super.key});
@@ -31,50 +30,50 @@ class _ScreenLoginState extends State<ScreenLogin> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final screenHeight = MediaQuery.sizeOf(context).height;
-    return Scaffold(
-      //! B O D Y
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthSuccess) {
-            // Show success snackbar
-            ElegantSnackbar.show(
-              context,
-              message: 'Logged-In as ${state.user.name.toString()}. 🎉🎉🎉 ',
-              type: SnackBarType.success,
-            );
-            // Navigate to home
-            Future.delayed(const Duration(milliseconds: 500), () {
-              NavigationHelper.navigateToWithReplacement(
-                context,
-                ScreenHome(
-                  userEmail: state.user.email,
-                  userName: state.user.name,
-                ),
-              );
-            });
-          } else if (state is AuthFailure) {
-            // Show error snackbar
-            ElegantSnackbar.show(
-              context,
-              message: 'Log-In Failed: ${state.error}.',
-              type: SnackBarType.error,
-            );
-          }
-        },
-        child: Stack(
+
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          // Show success message
+          ElegantSnackbar.show(
+            context,
+            message: 'Logged-In as ${state.user.name}. 🎉🎉🎉 ',
+            type: SnackBarType.success,
+          );
+
+          // Use Navigator directly with pushAndRemoveUntil for a clean navigation stack
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder:
+                  (context) => ScreenHome(
+                    userEmail: state.user.email,
+                    userName: state.user.name,
+                  ),
+            ),
+            (route) => false, // This removes all previous routes
+          );
+        } else if (state is AuthFailure) {
+          ElegantSnackbar.show(
+            context,
+            message: 'Log-In Failed: ${state.error}.',
+            type: SnackBarType.error,
+          );
+        }
+      },
+      child: Scaffold(
+        body: Stack(
           children: [
             LoginScreenWidgets.buildBackgroundImage(),
             //! CONTENT AREA
             Padding(
               padding: EdgeInsets.symmetric(
                 vertical: screenHeight * 0.03,
-                // assuring screen responsiveness
                 horizontal:
                     screenWidth > 1050 ? screenWidth * 0.1 : screenWidth * 0.01,
               ),
               child: Container(
                 height: double.infinity,
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: AppColors.whiteColor,
                   borderRadius: BorderRadius.circular(35),
@@ -103,6 +102,19 @@ class _ScreenLoginState extends State<ScreenLogin> {
                   ],
                 ),
               ),
+            ),
+
+            //! LOADING OVERLAY
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                if (state is AuthLoading) {
+                  return Container(
+                    color: Colors.black.withValues(alpha: 0.5),
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
             ),
           ],
         ),

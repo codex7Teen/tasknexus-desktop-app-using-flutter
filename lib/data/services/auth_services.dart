@@ -32,7 +32,7 @@ class AuthService {
     log('Credentials cleared from secure storage');
   }
 
-  // Save user data to Hive
+  // Save user data to Hive (including password now)
   Future<void> saveUserData(UserModel user) async {
     try {
       final userBox = await Hive.openBox<UserModel>(UserModel.boxName);
@@ -57,13 +57,34 @@ class AuthService {
     }
   }
 
-  // Validate login credentials
+  // Validate login credentials (check both secure storage and Hive)
   Future<bool> validateCredentials(String email, String password) async {
+    // First check secure storage
     final savedCredentials = await getCredentials();
-    log("STORED EMAIL: ${savedCredentials['email'].toString()}");
-    log("STORED PASSWORD: ${savedCredentials['password'].toString()}");
-    return email == savedCredentials['email'] &&
-        password == savedCredentials['password'];
+    log("SECURE STORED EMAIL: ${savedCredentials['email'].toString()}");
+    log("SECURE STORED PASSWORD: ${savedCredentials['password'].toString()}");
+    
+    // If credentials match in secure storage, return true
+    if (email == savedCredentials['email'] && password == savedCredentials['password']) {
+      return true;
+    }
+    
+    // If not found or don't match in secure storage, check Hive
+    try {
+      final userBox = await Hive.openBox<UserModel>(UserModel.boxName);
+      final user = userBox.get(email);
+      
+      if (user != null && user.password == password) {
+        // If valid, also restore credentials to secure storage for future use
+        await saveCredentials(email, password);
+        log("Credentials restored to secure storage from Hive data");
+        return true;
+      }
+    } catch (e) {
+      log('Error validating credentials from Hive: $e');
+    }
+    
+    return false;
   }
 
   // Check user is logged in

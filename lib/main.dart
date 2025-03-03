@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => AuthBloc()..add(CheckUserLoggedIn())),
-        BlocProvider(create: (context) => AddTaskBloc())
+        BlocProvider(create: (context) => AddTaskBloc()),
       ],
       child: MaterialApp(
         theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),

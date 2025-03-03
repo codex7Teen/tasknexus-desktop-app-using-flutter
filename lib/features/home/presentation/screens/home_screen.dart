@@ -176,23 +176,26 @@ class _ScreenHomeState extends State<ScreenHome> {
     return GestureDetector(
       onTap: () async {
         if (isLogout) {
+          // Handle logout
+          if (mounted) {
+            ElegantSnackbar.show(
+              actionLabel: 'LOGGED-OUT!',
+              duration: Duration(seconds: 1),
+              context,
+              message: 'Logout Success!!!',
+              type: SnackBarType.info,
+            );
+          }
           // logout login here
           context.read<AuthBloc>().add(LogoutEvent());
-          await Future.delayed(
-            Duration(milliseconds: 500),
-            () => NavigationHelper.navigateToWithReplacement(
-              context,
-              ScreenLogin(),
-            ),
-          );
-          // Handle logout
-          ElegantSnackbar.show(
-            actionLabel: 'LOGGED-OUT!',
-            duration: Duration(seconds: 2),
-            context,
-            message: 'Logout Success...',
-            type: SnackBarType.info,
-          );
+          await Future.delayed(Duration(milliseconds: 1000), () {
+            if (mounted) {
+              NavigationHelper.navigateToWithReplacement(
+                context,
+                ScreenLogin(),
+              );
+            }
+          });
         } else {
           setState(() {
             _currentSidebarItem = title;
