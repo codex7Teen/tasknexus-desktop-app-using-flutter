@@ -39,33 +39,33 @@ class AppTextstyles {
     color: AppColors.blackColor,
   );
 
-    static TextStyle loginSuperHeading = GoogleFonts.playfairDisplay(
-                                  letterSpacing: 0,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 50,
-                                  color: AppColors.blackColor,
-                                  height: 1.05,
-                                );
+  static TextStyle loginSuperHeading = GoogleFonts.playfairDisplay(
+    letterSpacing: 0,
+    fontWeight: FontWeight.w500,
+    fontSize: 50,
+    color: AppColors.blackColor,
+    height: 1.05,
+  );
 
-        static TextStyle loginMiniQuoteText = GoogleFonts.manrope(
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: 2,
-                                  fontSize: 10,
-                                  color: AppColors.whiteColor,
-                                );  
-                                
-           static TextStyle loginQuoteText = GoogleFonts.manrope(
-                                  height: 1.65,
-                                  fontWeight: FontWeight.w100,
-                                  letterSpacing: 1,
-                                  fontSize: 14,
-                                  color: AppColors.lightGreyColor,
-                                );      
-                                
-                     static TextStyle apptitileText = GoogleFonts.manrope(
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 0.2,
-                                  fontSize: 12,
-                                  color: AppColors.blackColor,
-                                );                                       
+  static TextStyle loginMiniQuoteText = GoogleFonts.manrope(
+    fontWeight: FontWeight.w500,
+    letterSpacing: 2,
+    fontSize: 10,
+    color: AppColors.whiteColor,
+  );
+
+  static TextStyle loginQuoteText = GoogleFonts.manrope(
+    height: 1.65,
+    fontWeight: FontWeight.w100,
+    letterSpacing: 1,
+    fontSize: 14,
+    color: AppColors.lightGreyColor,
+  );
+
+  static TextStyle apptitileText = GoogleFonts.manrope(
+    fontWeight: FontWeight.w900,
+    letterSpacing: 0.2,
+    fontSize: 12,
+    color: AppColors.blackColor,
+  );
 }
