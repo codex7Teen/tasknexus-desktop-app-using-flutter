@@ -1,8 +1,6 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tasknexus/core/config/app_colors.dart';
-import 'package:tasknexus/core/config/app_textstyles.dart';
 import 'package:tasknexus/data/models/task_model.dart';
 import 'package:tasknexus/data/services/task_service.dart';
 import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
