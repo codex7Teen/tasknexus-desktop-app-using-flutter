@@ -9,7 +9,8 @@ part 'add_task_event.dart';
 part 'add_task_state.dart';
 
 class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
-   final AddTaskService _addTaskService = AddTaskService();
+  final AddTaskService _addTaskService = AddTaskService();
+
   AddTaskBloc() : super(AddTaskInitialState()) {
     on<AddTaskInitial>(_onAddTaskInitial);
     on<AddTaskSave>(_onAddTaskSave);
@@ -17,14 +18,21 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     on<AddTaskLoadExisting>(_onAddTaskLoadExisting);
   }
 
-    Future<void> _onAddTaskInitial(AddTaskInitial event, Emitter<AddTaskState> emit) async {
+  //! INITIALIZE TASK (CHECK IF EDIT MODE OR NEW TASK)
+  Future<void> _onAddTaskInitial(
+    AddTaskInitial event,
+    Emitter<AddTaskState> emit,
+  ) async {
     emit(AddTaskLoading());
     try {
       // If this is an edit mode (has URN), load the task
       if (event.urn != null) {
-        final task = await _addTaskService.getTaskByURN(event.urn!, event.currentUserName!);
+        final task = await _addTaskService.getTaskByURN(
+          event.urn!,
+          event.currentUserName!,
+        );
         if (task != null) {
-          emit(AddTaskLoaded(task));
+          emit(AddTaskLoaded(task)); // Emit loaded state with task data
         } else {
           emit(const AddTaskFailure('Task not found'));
         }
@@ -38,9 +46,14 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     }
   }
 
-  Future<void> _onAddTaskSave(AddTaskSave event, Emitter<AddTaskState> emit) async {
+  //! SAVE TASK BLOC
+  Future<void> _onAddTaskSave(
+    AddTaskSave event,
+    Emitter<AddTaskState> emit,
+  ) async {
     emit(AddTaskLoading());
     try {
+      // Save task details using the service
       final success = await _addTaskService.saveTask(
         taskName: event.taskName,
         urn: event.urn,
@@ -65,9 +78,14 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     }
   }
 
-  Future<void> _onAddTaskUpdate(AddTaskUpdate event, Emitter<AddTaskState> emit) async {
+  //! UPDATE TASK BLOC
+  Future<void> _onAddTaskUpdate(
+    AddTaskUpdate event,
+    Emitter<AddTaskState> emit,
+  ) async {
     emit(AddTaskLoading());
     try {
+      // Update task details using the service
       final success = await _addTaskService.updateTask(
         taskName: event.taskName,
         urn: event.urn,
@@ -93,10 +111,18 @@ class AddTaskBloc extends Bloc<AddTaskEvent, AddTaskState> {
     }
   }
 
-  Future<void> _onAddTaskLoadExisting(AddTaskLoadExisting event, Emitter<AddTaskState> emit) async {
+  //! LOAD EXISTING TASK BLOC
+  Future<void> _onAddTaskLoadExisting(
+    AddTaskLoadExisting event,
+    Emitter<AddTaskState> emit,
+  ) async {
     emit(AddTaskLoading());
     try {
-      final task = await _addTaskService.getTaskByURN(event.urn, event.userEmail);
+      // Load task details using the provided URN
+      final task = await _addTaskService.getTaskByURN(
+        event.urn,
+        event.userEmail,
+      );
       if (task != null) {
         emit(AddTaskLoaded(task));
       } else {

@@ -3,12 +3,14 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasknexus/data/models/general_data_model.dart';
 import 'package:tasknexus/data/services/task_commencement_service.dart';
+
 part 'task_commencement_event.dart';
 part 'task_commencement_state.dart';
 
-class TaskCommencementBloc extends Bloc<TaskCommencementEvent, TaskCommencementState> {
+class TaskCommencementBloc
+    extends Bloc<TaskCommencementEvent, TaskCommencementState> {
   final TaskCommencementService _service = TaskCommencementService();
-  
+
   TaskCommencementBloc() : super(TaskCommencementInitial()) {
     on<InitializeTaskCommencement>(_onInitializeTaskCommencement);
     on<SaveGeneralData>(_onSaveGeneralData);
@@ -16,23 +18,26 @@ class TaskCommencementBloc extends Bloc<TaskCommencementEvent, TaskCommencementS
     on<CompleteTask>(_onCompleteTask);
     on<ChangeSelectedSchool>(_onChangeSelectedSchool);
   }
-  
+
+  //! Handles task initialization and loading general data
   Future<void> _onInitializeTaskCommencement(
-    InitializeTaskCommencement event, 
-    Emitter<TaskCommencementState> emit
+    InitializeTaskCommencement event,
+    Emitter<TaskCommencementState> emit,
   ) async {
     emit(TaskCommencementLoading());
     try {
       final generalData = await _service.getGeneralData(event.taskUrn);
-      
+
       if (generalData != null) {
-        // Data already exists, load it
-        emit(TaskCommencementLoaded(
-          generalData: generalData,
-          selectedSchoolIndex: 0,
-        ));
+        //! Data already exists, load it
+        emit(
+          TaskCommencementLoaded(
+            generalData: generalData,
+            selectedSchoolIndex: 0,
+          ),
+        );
       } else {
-        // No data exists, start fresh
+        //! No data exists, start fresh
         emit(TaskCommencementInitial());
       }
     } catch (e) {
@@ -40,10 +45,11 @@ class TaskCommencementBloc extends Bloc<TaskCommencementEvent, TaskCommencementS
       emit(TaskCommencementFailure('Failed to initialize: $e'));
     }
   }
-  
+
+  //! Handles saving general data related to the task
   Future<void> _onSaveGeneralData(
-    SaveGeneralData event, 
-    Emitter<TaskCommencementState> emit
+    SaveGeneralData event,
+    Emitter<TaskCommencementState> emit,
   ) async {
     emit(TaskCommencementLoading());
     try {
@@ -53,15 +59,17 @@ class TaskCommencementBloc extends Bloc<TaskCommencementEvent, TaskCommencementS
         totalSchools: event.totalSchools,
         userEmail: event.userEmail,
       );
-      
+
       if (success) {
         final generalData = await _service.getGeneralData(event.taskUrn);
-        
+
         if (generalData != null) {
-          emit(TaskCommencementLoaded(
-            generalData: generalData,
-            selectedSchoolIndex: 0,
-          ));
+          emit(
+            TaskCommencementLoaded(
+              generalData: generalData,
+              selectedSchoolIndex: 0,
+            ),
+          );
         } else {
           emit(TaskCommencementFailure('Failed to load saved data'));
         }
@@ -73,10 +81,11 @@ class TaskCommencementBloc extends Bloc<TaskCommencementEvent, TaskCommencementS
       emit(TaskCommencementFailure('Failed to save general data: $e'));
     }
   }
-  
+
+  //! Handles updating a specific school's data
   Future<void> _onUpdateSchoolData(
-    UpdateSchoolData event, 
-    Emitter<TaskCommencementState> emit
+    UpdateSchoolData event,
+    Emitter<TaskCommencementState> emit,
   ) async {
     emit(TaskCommencementLoading());
     try {
@@ -90,15 +99,17 @@ class TaskCommencementBloc extends Bloc<TaskCommencementEvent, TaskCommencementS
         grades: event.grades,
         userEmail: event.userEmail,
       );
-      
+
       if (success) {
         final generalData = await _service.getGeneralData(event.taskUrn);
-        
+
         if (generalData != null) {
-          emit(TaskCommencementLoaded(
-            generalData: generalData,
-            selectedSchoolIndex: event.schoolIndex,
-          ));
+          emit(
+            TaskCommencementLoaded(
+              generalData: generalData,
+              selectedSchoolIndex: event.schoolIndex,
+            ),
+          );
         } else {
           emit(TaskCommencementFailure('Failed to load updated data'));
         }
@@ -110,15 +121,19 @@ class TaskCommencementBloc extends Bloc<TaskCommencementEvent, TaskCommencementS
       emit(TaskCommencementFailure('Failed to update school data: $e'));
     }
   }
-  
+
+  //! Handles marking the task as completed
   Future<void> _onCompleteTask(
-    CompleteTask event, 
-    Emitter<TaskCommencementState> emit
+    CompleteTask event,
+    Emitter<TaskCommencementState> emit,
   ) async {
     emit(TaskCommencementLoading());
     try {
-      final success = await _service.completeTask(event.taskUrn, event.userEmail);
-      
+      final success = await _service.completeTask(
+        event.taskUrn,
+        event.userEmail,
+      );
+
       if (success) {
         emit(TaskCommencementCompleted());
       } else {
@@ -129,17 +144,20 @@ class TaskCommencementBloc extends Bloc<TaskCommencementEvent, TaskCommencementS
       emit(TaskCommencementFailure('Failed to complete task: $e'));
     }
   }
-  
+
+  //! Handles changing the selected school in the UI
   void _onChangeSelectedSchool(
-    ChangeSelectedSchool event, 
-    Emitter<TaskCommencementState> emit
+    ChangeSelectedSchool event,
+    Emitter<TaskCommencementState> emit,
   ) {
     if (state is TaskCommencementLoaded) {
       final loadedState = state as TaskCommencementLoaded;
-      emit(TaskCommencementLoaded(
-        generalData: loadedState.generalData,
-        selectedSchoolIndex: event.schoolIndex,
-      ));
+      emit(
+        TaskCommencementLoaded(
+          generalData: loadedState.generalData,
+          selectedSchoolIndex: event.schoolIndex,
+        ),
+      );
     }
   }
 }

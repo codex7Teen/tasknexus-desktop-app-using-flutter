@@ -1,5 +1,6 @@
 part of 'add_task_bloc.dart';
 
+/// Abstract class representing all events related to adding or updating a task.
 abstract class AddTaskEvent extends Equatable {
   const AddTaskEvent();
 
@@ -7,6 +8,8 @@ abstract class AddTaskEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+/// Event triggered when initializing the Add Task screen.
+/// If [urn] is provided, the task is loaded for editing.
 class AddTaskInitial extends AddTaskEvent {
   final String? urn;
   final String? currentUserName;
@@ -17,6 +20,7 @@ class AddTaskInitial extends AddTaskEvent {
   List<Object?> get props => [urn, currentUserName];
 }
 
+/// Event triggered when saving a new task.
 class AddTaskSave extends AddTaskEvent {
   final String taskName;
   final String urn;
@@ -57,6 +61,7 @@ class AddTaskSave extends AddTaskEvent {
   ];
 }
 
+/// Event triggered when updating an existing task.
 class AddTaskUpdate extends AddTaskEvent {
   final String taskName;
   final String urn;
@@ -100,14 +105,12 @@ class AddTaskUpdate extends AddTaskEvent {
   ];
 }
 
+/// Event triggered to load an existing task using its [urn].
 class AddTaskLoadExisting extends AddTaskEvent {
   final String urn;
   final String userEmail;
 
-  const AddTaskLoadExisting({
-    required this.urn,
-    required this.userEmail,
-  });
+  const AddTaskLoadExisting({required this.urn, required this.userEmail});
 
   @override
   List<Object?> get props => [urn, userEmail];

@@ -1,4 +1,3 @@
-// task_commencement_service.dart
 import 'dart:developer';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:tasknexus/data/models/general_data_model.dart';
@@ -8,7 +7,7 @@ import 'package:tasknexus/data/services/task_service.dart';
 class TaskCommencementService {
   final TaskService _taskService = TaskService();
 
-  // Save general data and initialize school data
+  //! Save general task data and initialize school list
   Future<bool> saveGeneralData({
     required String taskUrn,
     required String areaName,
@@ -20,19 +19,17 @@ class TaskCommencementService {
         GeneralDataModel.boxName,
       );
 
-      // Create empty schools list based on total schools count
-      final List<SchoolDataModel> schools = [];
-      for (int i = 0; i < totalSchools; i++) {
-        schools.add(
-          SchoolDataModel(
-            name: '',
-            type: '',
-            curriculum: [],
-            establishedDate: '',
-            grades: [],
-          ),
-        );
-      }
+      // Initialize an empty list of schools
+      final List<SchoolDataModel> schools = List.generate(
+        totalSchools,
+        (index) => SchoolDataModel(
+          name: '',
+          type: '',
+          curriculum: [],
+          establishedDate: '',
+          grades: [],
+        ),
+      );
 
       final generalData = GeneralDataModel(
         taskUrn: taskUrn,
@@ -42,10 +39,10 @@ class TaskCommencementService {
         userEmail: userEmail,
       );
 
-      // Use taskUrn as the key for storage
+      // Store task data using `taskUrn` as the key
       await box.put(taskUrn, generalData);
 
-      // Update task status to In Progress
+      // Update task status to "In Progress"
       await _taskService.updateTaskStatus(taskUrn, userEmail, 'In Progress');
 
       return true;
@@ -55,7 +52,7 @@ class TaskCommencementService {
     }
   }
 
-  // Update school data
+  //! Update specific school data within the task
   Future<bool> updateSchoolData({
     required String taskUrn,
     required int schoolIndex,
@@ -73,6 +70,13 @@ class TaskCommencementService {
       final generalData = box.get(taskUrn);
 
       if (generalData == null) {
+        log('No general data found for taskUrn: $taskUrn');
+        return false;
+      }
+
+      // Ensure school index is within valid range
+      if (schoolIndex < 0 || schoolIndex >= generalData.schools.length) {
+        log('Invalid school index: $schoolIndex');
         return false;
       }
 
@@ -85,16 +89,14 @@ class TaskCommencementService {
         grades: grades,
       );
 
-      // Update specific school in the list
+      // Replace the existing school data at `schoolIndex`
       final List<SchoolDataModel> updatedSchools = List.from(
         generalData.schools,
       );
       updatedSchools[schoolIndex] = updatedSchool;
 
-      // Create updated general data
+      // Save updated general data
       final updatedGeneralData = generalData.copyWith(schools: updatedSchools);
-
-      // Save updated data
       await box.put(taskUrn, updatedGeneralData);
 
       return true;
@@ -104,7 +106,7 @@ class TaskCommencementService {
     }
   }
 
-  // Get general data by task URN
+  //! Retrieve general task data using taskUrn
   Future<GeneralDataModel?> getGeneralData(String taskUrn) async {
     try {
       final box = await Hive.openBox<GeneralDataModel>(
@@ -117,7 +119,7 @@ class TaskCommencementService {
     }
   }
 
-  // Complete task
+  //! Mark task as completed
   Future<bool> completeTask(String taskUrn, String userEmail) async {
     try {
       await _taskService.updateTaskStatus(taskUrn, userEmail, 'Completed');

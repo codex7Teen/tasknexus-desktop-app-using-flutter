@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:tasknexus/data/models/client_contact_model.dart';
 import 'package:tasknexus/data/models/task_model.dart';
@@ -8,7 +7,7 @@ import 'package:tasknexus/data/services/task_service.dart';
 class AddTaskService {
   final TaskService _taskService = TaskService();
 
-  // Convert form data to TaskModel
+  //! Converts form input into a TaskModel object
   TaskModel createTaskFromForm({
     required String taskName,
     required String urn,
@@ -21,11 +20,10 @@ class AddTaskService {
     required List<List<TextEditingController>> clientDetailsControllers,
     required String userEmail,
   }) {
-    // Create client contacts list from controllers
     final List<ClientContactModel> clientContacts = [];
 
+    // Extract client contact details from controllers
     for (var row in clientDetailsControllers) {
-      // Only add non-empty contacts
       if (row[0].text.isNotEmpty ||
           row[1].text.isNotEmpty ||
           row[2].text.isNotEmpty) {
@@ -53,7 +51,7 @@ class AddTaskService {
     );
   }
 
-  // Save task to Hive
+  //! Saves a task to Hive database
   Future<bool> saveTask({
     required String taskName,
     required String urn,
@@ -89,7 +87,7 @@ class AddTaskService {
     }
   }
 
-  // Update existing task
+  //! Updates an existing task in Hive database
   Future<bool> updateTask({
     required String taskName,
     required String urn,
@@ -104,7 +102,6 @@ class AddTaskService {
     String? status,
   }) async {
     try {
-      // Create task with form data
       final task = createTaskFromForm(
         taskName: taskName,
         urn: urn,
@@ -118,7 +115,7 @@ class AddTaskService {
         userEmail: userEmail,
       );
 
-      // If status is provided, set it (for editing tasks that are already started)
+      // If task has a status update, apply it
       final taskWithStatus =
           status != null ? task.copyWith(status: status) : task;
 
@@ -131,7 +128,7 @@ class AddTaskService {
     }
   }
 
-  // Populate form controllers with existing task data
+  //! Populates form fields with existing task data
   void populateFormWithTask({
     required TaskModel task,
     required TextEditingController taskNameController,
@@ -144,7 +141,6 @@ class AddTaskService {
     required TextEditingController clientNameController,
     required List<List<TextEditingController>> clientDetailsControllers,
   }) {
-    // Set basic task details
     taskNameController.text = task.name;
     urnController.text = task.urn;
     descriptionController.text = task.description;
@@ -154,16 +150,14 @@ class AddTaskService {
     assignedByController.text = task.assignedBy;
     clientNameController.text = task.clientName;
 
-    // Clear existing client details
+    // Clear and refill client contact details
     for (var row in clientDetailsControllers) {
       for (var controller in row) {
         controller.clear();
       }
     }
 
-    // Add client contacts from task
     for (int i = 0; i < task.clientContacts.length; i++) {
-      // If we need more rows, add them
       if (i >= clientDetailsControllers.length) {
         clientDetailsControllers.add([
           TextEditingController(),
@@ -172,14 +166,13 @@ class AddTaskService {
         ]);
       }
 
-      // Set the values
       clientDetailsControllers[i][0].text = task.clientContacts[i].name;
       clientDetailsControllers[i][1].text = task.clientContacts[i].designation;
       clientDetailsControllers[i][2].text = task.clientContacts[i].email;
     }
   }
 
-  // Get a specific task by URN
+  // Retrieves a task by its URN
   Future<TaskModel?> getTaskByURN(String urn, String userEmail) async {
     final tasks = await _taskService.getTasks(userEmail);
     try {
@@ -189,7 +182,7 @@ class AddTaskService {
     }
   }
 
-  // Generate new URN for task
+  //! Generates a unique URN for a new task
   String generateURN() {
     return _taskService.generateURN();
   }

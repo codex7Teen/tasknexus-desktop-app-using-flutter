@@ -1,4 +1,3 @@
-// task_commencement_event.dart
 part of 'task_commencement_bloc.dart';
 
 abstract class TaskCommencementEvent extends Equatable {
@@ -8,6 +7,7 @@ abstract class TaskCommencementEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+//! Event to initialize task commencement
 class InitializeTaskCommencement extends TaskCommencementEvent {
   final String taskUrn;
   final String userEmail;
@@ -21,6 +21,7 @@ class InitializeTaskCommencement extends TaskCommencementEvent {
   List<Object?> get props => [taskUrn, userEmail];
 }
 
+//! Event to save general data
 class SaveGeneralData extends TaskCommencementEvent {
   final String taskUrn;
   final String areaName;
@@ -38,6 +39,7 @@ class SaveGeneralData extends TaskCommencementEvent {
   List<Object?> get props => [taskUrn, areaName, totalSchools, userEmail];
 }
 
+//! Event to update school-specific data
 class UpdateSchoolData extends TaskCommencementEvent {
   final String taskUrn;
   final int schoolIndex;
@@ -61,30 +63,29 @@ class UpdateSchoolData extends TaskCommencementEvent {
 
   @override
   List<Object?> get props => [
-    taskUrn, 
-    schoolIndex, 
-    schoolName, 
-    schoolType, 
-    curriculum, 
-    establishedDate, 
+    taskUrn,
+    schoolIndex,
+    schoolName,
+    schoolType,
+    curriculum,
+    establishedDate,
     grades,
     userEmail,
   ];
 }
 
+//! Event to complete the task
 class CompleteTask extends TaskCommencementEvent {
   final String taskUrn;
   final String userEmail;
 
-  const CompleteTask({
-    required this.taskUrn,
-    required this.userEmail,
-  });
+  const CompleteTask({required this.taskUrn, required this.userEmail});
 
   @override
   List<Object?> get props => [taskUrn, userEmail];
 }
 
+//! Event to change the selected school index
 class ChangeSelectedSchool extends TaskCommencementEvent {
   final int schoolIndex;
 

@@ -29,9 +29,9 @@ class _CustomBlackButtonState extends State<CustomBlackButton> {
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedScale(
-          scale: _isHovered ? 1.05 : 1.0, // Reduced scale for a subtle effect
-          duration: const Duration(milliseconds: 200), // Slower pop-up effect
-          curve: Curves.easeOutQuad, // Smoother transition
+          scale: _isHovered ? 1.05 : 1.0, 
+          duration: const Duration(milliseconds: 200), 
+          curve: Curves.easeOutQuad, 
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 15),
             width: double.infinity,
@@ -43,7 +43,7 @@ class _CustomBlackButtonState extends State<CustomBlackButton> {
                       ? [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.3),
-                          blurRadius: 6, // Reduced blur for a softer shadow
+                          blurRadius: 6, 
                           spreadRadius: 1,
                           offset: const Offset(0, 3),
                         ),

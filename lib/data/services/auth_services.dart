@@ -32,7 +32,7 @@ class AuthService {
     log('Credentials cleared from secure storage');
   }
 
-  // Save user data to Hive (including password now)
+  //! Save user data to Hive (including password now)
   Future<void> saveUserData(UserModel user) async {
     try {
       final userBox = await Hive.openBox<UserModel>(UserModel.boxName);
@@ -57,12 +57,12 @@ class AuthService {
     }
   }
 
-  // Validate login credentials (check both secure storage and Hive)
+  //! Validate login credentials (check both secure storage and Hive)
   Future<bool> validateCredentials(String email, String password) async {
     // First check secure storage
     final savedCredentials = await getCredentials();
-    log("SECURE STORED EMAIL: ${savedCredentials['email'].toString()}");
-    log("SECURE STORED PASSWORD: ${savedCredentials['password'].toString()}");
+    log("SECURE STORED EMAIL: \${savedCredentials['email'].toString()}");
+    log("SECURE STORED PASSWORD: \${savedCredentials['password'].toString()}");
 
     // If credentials match in secure storage, return true
     if (email == savedCredentials['email'] &&

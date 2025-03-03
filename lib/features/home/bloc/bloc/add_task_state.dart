@@ -1,5 +1,6 @@
 part of 'add_task_bloc.dart';
 
+/// Base class for all AddTask states.
 abstract class AddTaskState extends Equatable {
   const AddTaskState();
 
@@ -7,10 +8,13 @@ abstract class AddTaskState extends Equatable {
   List<Object?> get props => [];
 }
 
+/// Initial state when no action has been performed yet.
 final class AddTaskInitialState extends AddTaskState {}
 
+/// State when a task operation (like save or update) is in progress.
 class AddTaskLoading extends AddTaskState {}
 
+/// State when a task operation is successfully completed.
 class AddTaskSuccess extends AddTaskState {
   final String message;
 
@@ -20,6 +24,7 @@ class AddTaskSuccess extends AddTaskState {
   List<Object?> get props => [message];
 }
 
+/// State when a task operation fails.
 class AddTaskFailure extends AddTaskState {
   final String error;
 
@@ -29,6 +34,7 @@ class AddTaskFailure extends AddTaskState {
   List<Object?> get props => [error];
 }
 
+/// State when a task is successfully loaded.
 class AddTaskLoaded extends AddTaskState {
   final TaskModel task;
 

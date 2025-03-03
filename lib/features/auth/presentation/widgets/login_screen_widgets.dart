@@ -77,7 +77,7 @@ class LoginScreenWidgets {
                 ),
                 SizedBox(height: 18),
                 FadeInLeft(
-                 delay: Duration(milliseconds: 800),
+                  delay: Duration(milliseconds: 800),
                   child: Text(
                     "You can achieve great things by planning ahead and staying focused.\nStay organized, work smart, and keep moving forward.",
                     style: AppTextstyles.loginQuoteText,
@@ -116,7 +116,10 @@ class LoginScreenWidgets {
                 // APP NAME
                 FadeInDown(
                   child: Center(
-                    child: Text('TASKNEXUS', style: AppTextstyles.apptitileText),
+                    child: Text(
+                      'TASKNEXUS',
+                      style: AppTextstyles.apptitileText,
+                    ),
                   ),
                 ),
                 SizedBox(
