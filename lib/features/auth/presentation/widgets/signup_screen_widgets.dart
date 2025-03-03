@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasknexus/core/config/app_textstyles.dart';
@@ -34,8 +35,10 @@ class SignupScreenWidgets {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // APP NAME
-              Center(
-                child: Text('TASKNEXUS', style: AppTextstyles.apptitileText),
+              FadeInDown(
+                child: Center(
+                  child: Text('TASKNEXUS', style: AppTextstyles.apptitileText),
+                ),
               ),
               SizedBox(
                 height:
@@ -44,10 +47,12 @@ class SignupScreenWidgets {
                         : screenHeight * 0.01,
               ),
               // WELCOME TEXT
-              Center(
-                child: Text(
-                  "Let's Get Started",
-                  style: AppTextstyles.loginSuperHeading,
+              FadeInRight(
+                child: Center(
+                  child: Text(
+                    "Let's Get Started",
+                    style: AppTextstyles.loginSuperHeading,
+                  ),
                 ),
               ),
               SizedBox(height: 8),

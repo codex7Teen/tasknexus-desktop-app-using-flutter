@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
@@ -58,21 +59,29 @@ class LoginScreenWidgets {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 // PROMOTION TEXTS
-                Text(
-                  'ALIGN. ACCOMPLISH. ASCEND.',
-                  style: AppTextstyles.loginMiniQuoteText,
+                FadeInLeft(
+                  child: Text(
+                    'ALIGN. ACCOMPLISH. ASCEND.',
+                    style: AppTextstyles.loginMiniQuoteText,
+                  ),
                 ),
                 Spacer(),
-                Text(
-                  'Focus\nProductivity\nAchieve More',
-                  style: AppTextstyles.loginSuperHeading.copyWith(
-                    color: AppColors.whiteColor,
+                FadeInLeft(
+                  delay: Duration(milliseconds: 400),
+                  child: Text(
+                    'Focus\nProductivity\nAchieve More',
+                    style: AppTextstyles.loginSuperHeading.copyWith(
+                      color: AppColors.whiteColor,
+                    ),
                   ),
                 ),
                 SizedBox(height: 18),
-                Text(
-                  "You can achieve great things by planning ahead and staying focused.\nStay organized, work smart, and keep moving forward.",
-                  style: AppTextstyles.loginQuoteText,
+                FadeInLeft(
+                 delay: Duration(milliseconds: 800),
+                  child: Text(
+                    "You can achieve great things by planning ahead and staying focused.\nStay organized, work smart, and keep moving forward.",
+                    style: AppTextstyles.loginQuoteText,
+                  ),
                 ),
               ],
             ),
@@ -105,8 +114,10 @@ class LoginScreenWidgets {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // APP NAME
-                Center(
-                  child: Text('TASKNEXUS', style: AppTextstyles.apptitileText),
+                FadeInDown(
+                  child: Center(
+                    child: Text('TASKNEXUS', style: AppTextstyles.apptitileText),
+                  ),
                 ),
                 SizedBox(
                   height:
@@ -115,10 +126,12 @@ class LoginScreenWidgets {
                           : screenHeight * 0.01,
                 ),
                 // WELCOME TEXT
-                Center(
-                  child: Text(
-                    'Welcome Back',
-                    style: AppTextstyles.loginSuperHeading,
+                FadeInRight(
+                  child: Center(
+                    child: Text(
+                      'Welcome Back',
+                      style: AppTextstyles.loginSuperHeading,
+                    ),
                   ),
                 ),
                 SizedBox(height: 8),

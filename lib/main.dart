@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:tasknexus/data/models/client_contact_model.dart';
 import 'package:tasknexus/data/models/general_data_model.dart';
 import 'package:tasknexus/data/models/school_data_model.dart';
@@ -16,6 +19,10 @@ void main() async {
 
   // INITIALIZE HIVE
   await Hive.initFlutter();
+  //  await Hive.deleteFromDisk(); // Deletes all Hive data
+  //  await Hive.deleteBoxFromDisk(UserModel.boxName);
+  //   await Hive.deleteBoxFromDisk(TaskModel.boxName);
+  //    await Hive.deleteBoxFromDisk(GeneralDataModel.boxName);
 
   // REGISTER HIVE ADAPTER
   Hive.registerAdapter(UserModelAdapter());

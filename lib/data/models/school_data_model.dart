@@ -1,8 +1,9 @@
-import 'package:hive_flutter/hive_flutter.dart';
-part 'school_data_model.g.dart';
+import 'package:hive_flutter/hive_flutter.dart'; 
+part 'school_data_model.g.dart'; // Required for Hive type adapter generation
 
-@HiveType(typeId: 5)
+@HiveType(typeId: 5) // Unique type ID for Hive serialization
 class SchoolDataModel extends HiveObject {
+  
   @HiveField(0)
   final String name;
   
@@ -18,6 +19,7 @@ class SchoolDataModel extends HiveObject {
   @HiveField(4)
   final List<String> grades; // Primary / Secondary / Higher Secondary
   
+  // Constructor to initialize the model
   SchoolDataModel({
     required this.name,
     required this.type,
@@ -26,7 +28,7 @@ class SchoolDataModel extends HiveObject {
     required this.grades,
   });
   
-  // Copy with method
+  // Creates a new object with updated values while keeping others unchanged
   SchoolDataModel copyWith({
     String? name,
     String? type,

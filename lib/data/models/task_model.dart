@@ -2,43 +2,44 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:tasknexus/data/models/client_contact_model.dart';
 part 'task_model.g.dart';
 
+// Hive model for storing tasks
 @HiveType(typeId: 2)
 class TaskModel extends HiveObject {
   static const String boxName = 'Tasks_db';
-  
+  // Task details
   @HiveField(0)
   final String urn;
-  
+
   @HiveField(1)
   final String name;
-  
+
   @HiveField(2)
   final String description;
-  
+
   @HiveField(3)
   final String commencementDate;
-  
+
   @HiveField(4)
   final String dueDate;
-  
+
   @HiveField(5)
   final String assignedTo;
-  
+
   @HiveField(6)
   final String assignedBy;
-  
+
   @HiveField(7)
   final String clientName;
-  
+
   @HiveField(8)
-  final String status; // "Not Started", "In Progress", "Completed", "With-held"
-  
+  final String status; // Task progress status
+
   @HiveField(9)
-  final String userEmail; // To identify which user the task belongs to
-  
+  final String userEmail; // Task progress status
+
   @HiveField(10)
   final List<ClientContactModel> clientContacts;
-  
+  // Constructor to initialize task details
   TaskModel({
     required this.urn,
     required this.name,
@@ -52,8 +53,7 @@ class TaskModel extends HiveObject {
     required this.userEmail,
     required this.clientContacts,
   });
-  
-  // Copy with method for updating tasks
+  // Creates a modified copy of the task
   TaskModel copyWith({
     String? urn,
     String? name,

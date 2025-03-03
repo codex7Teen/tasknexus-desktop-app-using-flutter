@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
@@ -38,6 +39,12 @@ class _ScreenHomeState extends State<ScreenHome> {
   // Loading state
   bool _isLoading = true;
 
+  // Add this property to store the search query
+  String _searchQuery = '';
+
+  // Add this property to store filtered tasks
+  List<TaskModel> _filteredTasks = [];
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +52,7 @@ class _ScreenHomeState extends State<ScreenHome> {
   }
 
   // Load tasks based on the current sidebar selection
+  // Modify the _loadTasks method to initialize filtered tasks
   Future<void> _loadTasks() async {
     setState(() {
       _isLoading = true;
@@ -88,6 +96,8 @@ class _ScreenHomeState extends State<ScreenHome> {
 
       setState(() {
         _tasks = tasks;
+        // Apply existing search filter to the new tasks
+        _filterTasks();
         _isLoading = false;
       });
     } catch (e) {
@@ -114,7 +124,7 @@ class _ScreenHomeState extends State<ScreenHome> {
         child: Row(
           children: [
             //! L E F T - S I D E B A R
-            _buildSidebar(screenHeight),
+            FadeInLeft(child: _buildSidebar(screenHeight)),
 
             //! M A I N - C O N T E N T   A R E A
             Expanded(
@@ -420,10 +430,24 @@ class _ScreenHomeState extends State<ScreenHome> {
                       border: InputBorder.none,
                     ),
                     onChanged: (value) {
-                      // TODO: Implement search functionality
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                        _filterTasks();
+                      });
                     },
                   ),
                 ),
+                // Clear search button
+                if (_searchQuery.isNotEmpty)
+                  IconButton(
+                    icon: const Icon(Icons.clear, color: Colors.grey),
+                    onPressed: () {
+                      setState(() {
+                        _searchQuery = '';
+                        _filterTasks();
+                      });
+                    },
+                  ),
               ],
             ),
           ),
@@ -447,7 +471,7 @@ class _ScreenHomeState extends State<ScreenHome> {
               child:
                   _isLoading
                       ? const Center(child: CircularProgressIndicator())
-                      : _tasks.isEmpty
+                      : _filteredTasks.isEmpty
                       ? _buildEmptyState()
                       : SingleChildScrollView(
                         child: SizedBox(
@@ -471,7 +495,8 @@ class _ScreenHomeState extends State<ScreenHome> {
                               DataColumn(label: Text('Actions')),
                             ],
                             rows:
-                                _tasks.map((task) {
+                                _filteredTasks.map((task) {
+                                  // Rest of the DataRow code remains the same
                                   return DataRow(
                                     cells: [
                                       DataCell(Text(task.urn)),
@@ -538,7 +563,6 @@ class _ScreenHomeState extends State<ScreenHome> {
                                         Row(
                                           children: [
                                             // Only show Start button for Not Started tasks
-                                            // Only show Start button for Not Started tasks
                                             if (task.status == 'Not Started')
                                               _buildActionButton(
                                                 'Start',
@@ -603,7 +627,6 @@ class _ScreenHomeState extends State<ScreenHome> {
                                                 );
 
                                                 // Reload tasks after returning from add task screen
-
                                                 await _loadTasks();
                                               },
                                             ),
@@ -633,6 +656,23 @@ class _ScreenHomeState extends State<ScreenHome> {
         ],
       ),
     );
+  }
+
+  // Add this method to filter tasks based on search query
+  void _filterTasks() {
+    if (_searchQuery.isEmpty) {
+      _filteredTasks = List.from(_tasks);
+    } else {
+      _filteredTasks =
+          _tasks.where((task) {
+            return task.name.toLowerCase().contains(_searchQuery) ||
+                task.urn.toLowerCase().contains(_searchQuery) ||
+                task.assignedBy.toLowerCase().contains(_searchQuery) ||
+                task.assignedTo.toLowerCase().contains(_searchQuery) ||
+                task.clientName.toLowerCase().contains(_searchQuery) ||
+                task.status.toLowerCase().contains(_searchQuery);
+          }).toList();
+    }
   }
 
   // Helper method to get status colors
@@ -702,17 +742,18 @@ class _ScreenHomeState extends State<ScreenHome> {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () async {
-              NavigationHelper.navigateToWithoutReplacement(
-                context,
-                ScreenAddTask(
-                  userEmail: widget.userEmail,
-                  userName: widget.userName,
-                ),
-              );
-
-              // Reload tasks after returning from add task screen
-
-              await _loadTasks();
+              final result =
+                  await NavigationHelper.navigateToWithoutReplacement(
+                    context,
+                    ScreenAddTask(
+                      userEmail: widget.userEmail,
+                      userName: widget.userName,
+                    ),
+                  );
+              // Reload tasks after returning from add task screen\
+              if (result) {
+                await _loadTasks();
+              }
             },
             icon: const Icon(Icons.add, color: AppColors.whiteColor),
             label: Text(

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
@@ -7,7 +5,7 @@ import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
 import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widgets.dart';
 import 'package:tasknexus/features/home/presentation/screens/home_screen.dart';
 import 'package:tasknexus/shared/custom_elegant_snackbar.dart';
-import 'package:tasknexus/shared/navigation_helper_widget.dart'; // Import your navigation helper
+import 'package:tasknexus/shared/navigation_helper_widget.dart';
 
 class ScreenLogin extends StatefulWidget {
   const ScreenLogin({super.key});
