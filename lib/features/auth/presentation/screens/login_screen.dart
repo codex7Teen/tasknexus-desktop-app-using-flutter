@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tasknexus/core/config/app_colors.dart';
@@ -5,6 +7,7 @@ import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
 import 'package:tasknexus/features/auth/presentation/widgets/login_screen_widgets.dart';
 import 'package:tasknexus/features/home/presentation/screens/home_screen.dart';
 import 'package:tasknexus/shared/custom_elegant_snackbar.dart';
+import 'package:tasknexus/shared/navigation_helper_widget.dart'; // Import your navigation helper
 
 class ScreenLogin extends StatefulWidget {
   const ScreenLogin({super.key});
@@ -34,32 +37,37 @@ class _ScreenLoginState extends State<ScreenLogin> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          // Show success message
+          // First show the success snackbar
           ElegantSnackbar.show(
             context,
             message: 'Logged-In as ${state.user.name}. 🎉🎉🎉 ',
             type: SnackBarType.success,
           );
 
-          // Use Navigator directly with pushAndRemoveUntil for a clean navigation stack
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder:
-                  (context) => ScreenHome(
-                    userEmail: state.user.email,
-                    userName: state.user.name,
-                  ),
-            ),
-            (route) => false, // This removes all previous routes
-          );
+          // Ensure navigation happens after Snackbar is fully visible
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              NavigationHelper.navigateToWithReplacement(
+                context,
+                ScreenHome(
+                  userEmail: state.user.email,
+                  userName: state.user.name,
+                ),
+                milliseconds: 400, // Transition time
+              );
+            }
+          });
         } else if (state is AuthFailure) {
-          ElegantSnackbar.show(
-            context,
-            message: 'Log-In Failed: ${state.error}.',
-            type: SnackBarType.error,
+          // Show failure Snackbar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Log-In Failed: ${state.error}.'),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       },
+
       child: Scaffold(
         body: Stack(
           children: [
@@ -102,19 +110,6 @@ class _ScreenLoginState extends State<ScreenLogin> {
                   ],
                 ),
               ),
-            ),
-
-            //! LOADING OVERLAY
-            BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                if (state is AuthLoading) {
-                  return Container(
-                    color: Colors.black.withValues(alpha: 0.5),
-                    child: const Center(child: CircularProgressIndicator()),
-                  );
-                }
-                return const SizedBox.shrink();
-              },
             ),
           ],
         ),

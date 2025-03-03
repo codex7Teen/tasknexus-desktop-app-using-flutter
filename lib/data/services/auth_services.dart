@@ -63,17 +63,18 @@ class AuthService {
     final savedCredentials = await getCredentials();
     log("SECURE STORED EMAIL: ${savedCredentials['email'].toString()}");
     log("SECURE STORED PASSWORD: ${savedCredentials['password'].toString()}");
-    
+
     // If credentials match in secure storage, return true
-    if (email == savedCredentials['email'] && password == savedCredentials['password']) {
+    if (email == savedCredentials['email'] &&
+        password == savedCredentials['password']) {
       return true;
     }
-    
+
     // If not found or don't match in secure storage, check Hive
     try {
       final userBox = await Hive.openBox<UserModel>(UserModel.boxName);
       final user = userBox.get(email);
-      
+
       if (user != null && user.password == password) {
         // If valid, also restore credentials to secure storage for future use
         await saveCredentials(email, password);
@@ -83,7 +84,7 @@ class AuthService {
     } catch (e) {
       log('Error validating credentials from Hive: $e');
     }
-    
+
     return false;
   }
 

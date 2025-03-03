@@ -33,9 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             // Store credentials in secure storage after successful login
             await _authService.saveCredentials(event.email, event.password);
 
-            // Remove the artificial delay - this might be causing the blink
-            // await Future.delayed(const Duration(milliseconds: 100));
-
+            // Emit success state with user data
             emit(AuthSuccess(user: user));
           } else {
             emit(AuthFailure(error: 'User data not found'));
@@ -95,20 +93,24 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           final credentials = await _authService.getCredentials();
           final email = credentials['email'] ?? '';
 
-          // Get user data from Hive
-          final user = await _authService.getUserData(email);
+          if (email.isNotEmpty) {
+            // Get user data from Hive
+            final user = await _authService.getUserData(email);
 
-          if (user != null) {
-            emit(AuthSuccess(user: user));
-            return;
+            if (user != null) {
+              // Make sure we give enough time for the UI to react
+              await Future.delayed(const Duration(milliseconds: 300));
+              emit(AuthSuccess(user: user));
+              return;
+            }
           }
         }
 
-        emit(CheckUserLoggedInState(isUserLoggedIn: isUserLoggedIn));
+        // If we get here, either user is not logged in or we couldn't get valid user data
+        emit(CheckUserLoggedInState(isUserLoggedIn: false));
       } catch (e) {
-        emit(
-          AuthFailure(error: 'Error checking login status: ${e.toString()}'),
-        );
+        log('Error checking login status: ${e.toString()}');
+        emit(CheckUserLoggedInState(isUserLoggedIn: false));
       }
     });
 
@@ -117,7 +119,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(ForgotPasswordLoadingState());
       try {
         await Future.delayed(
-          Duration(milliseconds: 1500),
+          Duration(milliseconds: 1000),
           () => emit(ForgotPasswordSuccessState(email: event.email)),
         );
       } catch (e) {
