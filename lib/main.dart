@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:tasknexus/data/models/client_contact_model.dart';
+import 'package:tasknexus/data/models/general_data_model.dart';
+import 'package:tasknexus/data/models/school_data_model.dart';
 import 'package:tasknexus/data/models/task_model.dart';
 import 'package:tasknexus/data/models/user_model.dart';
 import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
@@ -19,6 +21,8 @@ void main() async {
   Hive.registerAdapter(UserModelAdapter());
   Hive.registerAdapter(TaskModelAdapter());
   Hive.registerAdapter(ClientContactModelAdapter());
+  Hive.registerAdapter(GeneralDataModelAdapter());
+  Hive.registerAdapter(SchoolDataModelAdapter());
 
   runApp(const MyApp());
 }

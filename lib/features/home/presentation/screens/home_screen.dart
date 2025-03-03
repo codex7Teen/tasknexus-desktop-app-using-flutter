@@ -7,6 +7,7 @@ import 'package:tasknexus/data/services/task_service.dart';
 import 'package:tasknexus/features/auth/bloc/bloc/auth_bloc.dart';
 import 'package:tasknexus/features/auth/presentation/screens/login_screen.dart';
 import 'package:tasknexus/features/home/presentation/screens/add_task_screen.dart';
+import 'package:tasknexus/features/task_commencement/presentation/screens/task_commencement_screen.dart';
 import 'package:tasknexus/shared/custom_elegant_snackbar.dart';
 import 'package:tasknexus/shared/navigation_helper_widget.dart';
 
@@ -322,7 +323,7 @@ class _ScreenHomeState extends State<ScreenHome> {
           (context) => [
             _buildPopupMenuItem('Home', Icons.home),
             _buildPopupMenuItem('Settings', Icons.settings),
-            _buildPopupMenuItem('Sign Out', Icons.logout),
+            _buildPopupMenuItem('Logout', Icons.logout),
           ],
       child: Container(
         padding: const EdgeInsets.all(2),
@@ -348,12 +349,34 @@ class _ScreenHomeState extends State<ScreenHome> {
 
   PopupMenuItem _buildPopupMenuItem(String title, IconData icon) {
     return PopupMenuItem(
-      onTap: () {
-        ElegantSnackbar.show(
-          context,
-          message: 'Navigating to $title',
-          type: SnackBarType.info,
-        );
+      onTap: () async {
+        if (title == 'Home') {
+          NavigationHelper.navigateToWithReplacement(
+            context,
+            ScreenHome(userEmail: widget.userEmail, userName: widget.userName),
+          );
+        } else if (title == 'Logout') {
+          // Handle logout
+          if (mounted) {
+            ElegantSnackbar.show(
+              actionLabel: 'LOGGED-OUT!',
+              duration: Duration(seconds: 1),
+              context,
+              message: 'Logout Success!!!',
+              type: SnackBarType.info,
+            );
+          }
+          // logout login here
+          context.read<AuthBloc>().add(LogoutEvent());
+          await Future.delayed(Duration(milliseconds: 1000), () {
+            if (mounted) {
+              NavigationHelper.navigateToWithReplacement(
+                context,
+                ScreenLogin(),
+              );
+            }
+          });
+        }
       },
       child: Row(
         children: [
@@ -515,15 +538,40 @@ class _ScreenHomeState extends State<ScreenHome> {
                                         Row(
                                           children: [
                                             // Only show Start button for Not Started tasks
+                                            // Only show Start button for Not Started tasks
                                             if (task.status == 'Not Started')
                                               _buildActionButton(
                                                 'Start',
                                                 Icons.play_arrow,
                                                 Colors.green,
-                                                () => _updateTaskStatus(
-                                                  task,
-                                                  'In Progress',
-                                                ),
+                                                () async {
+                                                  // First update the status
+                                                  await _updateTaskStatus(
+                                                    task,
+                                                    'In Progress',
+                                                  );
+
+                                                  // Then navigate to the Task Commencement screen
+                                                  if (mounted) {
+                                                    final result =
+                                                        await NavigationHelper.navigateToWithoutReplacement(
+                                                          context,
+                                                          ScreenTaskCommencement(
+                                                            taskUrn: task.urn,
+                                                            userEmail:
+                                                                widget
+                                                                    .userEmail,
+                                                            userName:
+                                                                widget.userName,
+                                                          ),
+                                                        );
+
+                                                    // Reload tasks after returning from the task commencement screen
+                                                    if (result == true) {
+                                                      await _loadTasks();
+                                                    }
+                                                  }
+                                                },
                                               ),
 
                                             // Only show Complete button for In Progress tasks
